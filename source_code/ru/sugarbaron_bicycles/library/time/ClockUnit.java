@@ -25,13 +25,14 @@ final public class ClockUnit{
   /////////////////////////////////////////////////////////////////////////////
   /**
    * get current time value. actually, this method returns a value of time
-   * interval betveen creation of this #ClockUnit object and invocation of
+   * interval between creation of this #ClockUnit object and invocation of
    * this method.
    * 
    * @return time value (in milliseconds).
    */
   public long time(){
-    long ms = (System.nanoTime() - this.start_point)/1000000L;
+    long ms;
+    ms = (System.nanoTime() - this.start_point)/1000000L;
     return ms;
   }
 }

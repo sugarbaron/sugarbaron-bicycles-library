@@ -43,13 +43,13 @@ public final class LogSubsystem{
    *                                    <code>MAX_LOGS_QUANTITY</code> logs in
    *                                    system,
    *                                  or if was detected wrong work of a
-   *                                    programm, because of errors in code.
+   *                                    program, because of errors in code.
    *                                    
    * @throws CriticalOperationFailed  in case of problems while working
    *                                    <code>LogUnit</code> constructor,
    *                                  or if some operation was failed, and this
    *                                    fact does not allow continue execution
-   *                                    of a programm.
+   *                                    of a program.
    * 
    * @return link to created LogUnit instance
    */

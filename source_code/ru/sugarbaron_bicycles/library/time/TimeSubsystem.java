@@ -42,7 +42,7 @@ public final class TimeSubsystem{
    * @param ms  pause value (in milliseconds)
    * 
    * @throws NeedFixCode  if was detected wrong work of a
-   *                      programm, because of errors in code.
+   *                      program, because of errors in code.
    */
   static public void sleep(long ms)
   throws NeedFixCode{
@@ -55,7 +55,7 @@ public final class TimeSubsystem{
     try{
       log = LogSubsystem.createLog("time_subsystem_log.txt", systemClock);
     }catch(CriticalOperationFailed x){
-     Dbg.out("[x][TimeSubsystem]#CriticalOperationFailed while ceating log instance");
+     Dbg.out("[x][TimeSubsystem]#CriticalOperationFailed while creating log instance");
      Dbg.out(x.getMessage());
      return;
     }

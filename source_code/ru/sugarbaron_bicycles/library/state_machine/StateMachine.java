@@ -1,6 +1,6 @@
 package ru.sugarbaron_bicycles.library.state_machine;
 
-//[standart libraries]
+//[standard libraries]
 import java.util.LinkedList;
 //[my bicycles]
 import ru.sugarbaron_bicycles.library.exceptions.*;
@@ -22,21 +22,23 @@ public final class StateMachine{
   private GraphState pastState = null;
   /** jumps queue */
   private LinkedList<Jump> jumpsQueue = null;
-  
+  /** jumps queue processing flag */
+  private boolean queueIsUnderProcessing = false;
+
   //constructors_section_______________________________________________________
   /////////////////////////////////////////////////////////////////////////////
   /**
    * create state machine
    */
   private StateMachine(){
-    jumpsQueue = new LinkedList<Jump>();
+    jumpsQueue = new LinkedList<>();
   }
   
   //primary_section____________________________________________________________
   /////////////////////////////////////////////////////////////////////////////
   /**
    * constructor is private for prohibition of non-synchronized invocation 
-   * from different threads. for creating state machine instanse should
+   * from different threads. for creating state machine instance should
    * to use this method
    * 
    * @return reference to just-created state machine instance
@@ -52,7 +54,7 @@ public final class StateMachine{
    * @param to      destination state for jump
    * @param signal  signal, which must be received by state machine for jump
    * 
-   * @throws NeedFixCode  in case, when was detected wrong work of a programm
+   * @throws NeedFixCode  in case, when was detected wrong work of a program
    *                      because of errors in code
    */
   static synchronized public void setJump(GraphState from, GraphState to, GraphSignal signal)
@@ -76,7 +78,7 @@ public final class StateMachine{
    * 
    * @param start  initial state
    * 
-   * @throws NeedFixCode  in case, when was detected wrong work of a programm
+   * @throws NeedFixCode  in case, when was detected wrong work of a program
    *                      because of errors in code
    */
   synchronized public void setStart(GraphState start)
@@ -99,7 +101,7 @@ public final class StateMachine{
    * 
    * @param signal  signal, delivered to state machine
    * 
-   * @throws NeedFixCode  in case, when was detected wrong work of a programm
+   * @throws NeedFixCode  in case, when was detected wrong work of a program
    *                      because of errors in code
    */
   synchronized public void makeStep(GraphSignal signal)
@@ -122,13 +124,17 @@ public final class StateMachine{
     return;
   }
 
-  synchronized private void processJumpsQueue(){
+  /**
+   * process jumps, which are stored in jumpsQueue. order is fifo
+   */
+  synchronized private void processJumpsQueue()
+  throws NeedFixCode{
     if(queueIsUnderProcessing){
       return;
     }
     queueIsUnderProcessing = true;
     while( !(jumpsQueue.isEmpty()) ){
-      Jump jump = jumpsQueue.takeFirst();
+      Jump jump = jumpsQueue.pollFirst();
       makeJump(jump);
     }
     queueIsUnderProcessing = false;
@@ -159,15 +165,15 @@ public final class StateMachine{
    * make jump from current state to other state, defined by index of
    * #jumps[] array for current state
    * 
-   * @param jumpIdx  index of jump for current state, which must be executed
+   * @param jump  jump for current state, which must be executed
    * 
-   * @throws NeedFixCode  in case, when was detected wrong work of a programm
+   * @throws NeedFixCode  in case, when was detected wrong work of a program
    *                      because of errors in code
    */
   private void makeJump(Jump jump)
   throws NeedFixCode{
     GraphState nextState = jump.to;
-    //[checking for state changing]
+
     if(nextState != currentState){
       //[jumping to other state]
       //[leaving this state]
@@ -179,17 +185,14 @@ public final class StateMachine{
       currentState.enter();
       //[executing activity of new state]
       currentState.activity();
-      //[jump complete]
-      return;
     }
-    //[checking for jumping to same state]
-    if(nextState == currentState){
+    else{
       //[jumping to same state]
       pastState    = currentState;
       //[executing activity of current state]
       currentState.activity();
-      //[jump complete]
-      return;
     }
+    //[jump complete]
+    return;
   }
 }

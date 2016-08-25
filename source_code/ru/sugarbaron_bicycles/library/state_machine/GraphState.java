@@ -26,7 +26,7 @@ public class GraphState{
    */
   public GraphState(){
     synchronized(this){
-      //[02.initing fields]
+      //[02.initializing fields]
       jumps = new Jump[MAX_JUMPS];
       for(int i=0; i<MAX_JUMPS; i++){
         jumps[i] = null;
@@ -39,7 +39,7 @@ public class GraphState{
   /////////////////////////////////////////////////////////////////////////////
   /**
    * constructor is private for prohibition of non-synchronized invocation 
-   * from different threads. for creating state instanse should to use
+   * from different threads. for creating state instance should to use
    * this method
    * 
    * @return reference to just-created state instance
@@ -51,9 +51,9 @@ public class GraphState{
   /**
    * method for overriding. in overrided method user can define
    * actions, which will execute, when this graph state will become
-   * current from other ghaph state.
+   * current from other graph state.
    * 
-   * @throws NeedFixCode  in case, when was detected wrong work of a programm
+   * @throws NeedFixCode  in case, when was detected wrong work of a program
    *                      because of errors in code
    */
   synchronized public void enter()
@@ -63,7 +63,7 @@ public class GraphState{
    * method for overriding. in overrided method user can define
    * inner activity of this graph state state.
    * 
-   * @throws NeedFixCode  in case, when was detected wrong work of a programm
+   * @throws NeedFixCode  in case, when was detected wrong work of a program
    *                      because of errors in code
    */
   synchronized public void activity()
@@ -74,7 +74,7 @@ public class GraphState{
    * actions, which will execute, when this graph state will change
    * to other graph state
    * 
-   * @throws NeedFixCode  in case, when was detected wrong work of a programm
+   * @throws NeedFixCode  in case, when was detected wrong work of a program
    *                      because of errors in code
    */
   synchronized public void leave()
@@ -87,7 +87,7 @@ public class GraphState{
    * @param to      destination state for jump
    * @param signal  signal, which must be received by state machine for jump
    * 
-   * @throws NeedFixCode  in case, when was detected wrong work of a programm
+   * @throws NeedFixCode  in case, when was detected wrong work of a program
    *                      because of errors in code
    */
   void addJump(GraphState to, GraphSignal signal)
@@ -103,7 +103,7 @@ public class GraphState{
     if(!(currentJumpsQuantity < MAX_JUMPS)){
       throw new NeedFixCode("[x][State]#setJump():maximum quantity of jumps for state is reached");
     }
-    //[03.checking corectness of adding specified jump]
+    //[03.checking correctness of adding specified jump]
     for(int i=0; i<currentJumpsQuantity; i++){
       if(signal == jumps[i].signal){
         throw new NeedFixCode("[x][State]#setJump():jump with such signal is already registered for this state");

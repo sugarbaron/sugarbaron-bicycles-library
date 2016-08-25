@@ -45,7 +45,7 @@ public final class LogUnit{
   private Formatter    recordConstructor;
   //buffer, where the record is constructing
   private StringBuffer buffer;
-  //file, whith errors occured during LogUnit works
+  //file, with errors occurred during LogUnit works
   private File         errFile;
   //tool for writing records to "log_errors.txt"
   private PrintWriter  errWriter;
@@ -71,7 +71,7 @@ public final class LogUnit{
    *                                  or if it is null,
    *                                  or if "clock" argument is null,
    *                                  or if was detected wrong work of a
-   *                                    programm, because of errors in code.
+   *                                    program, because of errors in code.
    *                                    
    * @throws CriticalOperationFailed  if can't create "logs" directory, or
    *                                  if an IOException appears while working
@@ -80,13 +80,13 @@ public final class LogUnit{
    *                                    working <code>new PrintWriter()</code>,
    *                                  or if some operation was failed, and this
    *                                    fact does not allow continue execution
-   *                                    of a programm.
+   *                                    of a program.
    */
   LogUnit(String fileName, ClockUnit clock)
   throws NeedFixCode, CriticalOperationFailed{
     boolean isOk = false;
     
-    //1)checking parameters validtion:
+    //1)checking parameters validation:
     //checking link to clock unit
     if(clock == null){
       Dbg.out("[x][LogUnit]link to clock unit is null");
@@ -126,7 +126,7 @@ public final class LogUnit{
     //5)creating buffer, where log records will be constructed
     buffer = new StringBuffer();
     
-    //6)creating record consructor
+    //6)creating record constructor
     recordConstructor = new Formatter(buffer);
     
     //7)creating errFile
@@ -162,14 +162,14 @@ public final class LogUnit{
       return;  
     }
     
-    //constucting record (step 1)
+    //constructing record (step 1)
     recordConstructor.format(text, parameters);
     record = buffer.toString();
     
     //cleaning buffer
     buffer.delete(0, buffer.length());
     
-    //constucting record (step 2)
+    //constructing record (step 2)
     recordConstructor.format("[%010d]%s \n", time, record);
     record = buffer.toString();
     
@@ -199,7 +199,7 @@ public final class LogUnit{
    * 
    * @param fileName    name of log file for checking
    * 
-   * @throws BadFileNameException    if <code>fileName</code> contains denied
+   * @throws NeedFixCode    if <code>fileName</code> contains denied
    *                                 characters (see method description), or
    *                                 if it is null.
    */

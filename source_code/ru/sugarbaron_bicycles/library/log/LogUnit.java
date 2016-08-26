@@ -154,7 +154,7 @@ public final class LogUnit{
    * @param parameters    parameters for registering in log file.
    */
   public synchronized void write(String text, Object... parameters){
-    long time = systemClock.time();
+    long time = systemClock.getTime();
     
     //checking parameters validation
     if(text == null){
@@ -281,7 +281,7 @@ public final class LogUnit{
       logWriter.close();
     }
     catch(IOException unusable){
-      long time = systemClock.time();
+      long time = systemClock.getTime();
       writeError("[%10][x][LogUnit]closing FileWriter error \n", time);
     }
     //closing recordConstructor

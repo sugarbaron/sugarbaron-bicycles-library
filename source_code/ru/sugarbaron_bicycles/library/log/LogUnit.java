@@ -1,5 +1,5 @@
-//[author: sugarbaron ([sugarbaron_bicycles] e-mail:sugarbaron1@mail.ru)]
-//[date: 27.08.2016]
+/* author: sugarbaron ([sugarbaron_bicycles] e-mail:sugarbaron1@mail.ru)
+   date: 27.08.2016 */
 package ru.sugarbaron_bicycles.library.log;
 
 //[standard libraries]
@@ -46,14 +46,10 @@ implements Log{
    *                                  or if some operation was failed, and this
    *                                    fact does not allow continue execution
    *                                    of a program. */
-  LogUnit(String fileName, Clock clock)
-  throws NeedFixCode, CriticalOperationFailed{
+  LogUnit(String fileName, Clock clock){
     //[checking arguments correctness]
-    if(clock == null){
-      Dbg.out("[x][LogUnit]link to clock unit is null");
-      throw new NeedFixCode("[x]link to clock unit is null");
-    }
     checkLogFileName(fileName);
+    checkClock(clock);
 
     File logsDirectory = createLogsDirectory();
     logFile = new File(logsDirectory, fileName);
@@ -61,6 +57,7 @@ implements Log{
     systemClock = clock;
     recordConstructorResult = new StringBuffer();
     recordConstructor = new Formatter(recordConstructorResult);
+    return;
   }
 
   /**
@@ -73,8 +70,7 @@ implements Log{
    * @param fileName    name of log file for checking
    *
    * @throws NeedFixCode    if <code>fileName</code> is invalid */
-  private void checkLogFileName(String fileName)
-  throws NeedFixCode{
+  private void checkLogFileName(String fileName){
     checkNameForNull(fileName);
     checkNameLength(fileName);
     checkNameForDeniedCharacters(fileName);
@@ -83,8 +79,7 @@ implements Log{
     return;
   }
 
-  private void checkNameForNull(String name)
-  throws NeedFixCode{
+  private void checkNameForNull(String name){
     if(name == null){
       Dbg.out("[x][LogUnit]fileName is null");
       throw new NeedFixCode("[x]fileName is null");
@@ -92,8 +87,7 @@ implements Log{
     return;
   }
 
-  private void checkNameLength(String name)
-  throws NeedFixCode{
+  private void checkNameLength(String name){
     final int MAX_FILENAME_LENGTH = 80;
     int length = name.length();
     boolean isLengthCorrect = ( (length > 0)&&(length <= MAX_FILENAME_LENGTH) );
@@ -104,8 +98,7 @@ implements Log{
     return;
   }
 
-  private void checkNameForDeniedCharacters(String name)
-  throws NeedFixCode{
+  private void checkNameForDeniedCharacters(String name){
     int length = name.length();
     for(int i=0; i<length; i++){
       int character = name.codePointAt(i);
@@ -129,8 +122,7 @@ implements Log{
     return;
   }
 
-  private void checkNameForLeadingSpace(String name)
-  throws NeedFixCode{
+  private void checkNameForLeadingSpace(String name){
     if(name.codePointAt(0) == 0x20){
       Dbg.out("[x][LogUnit]leading space in file name");
       throw new NeedFixCode("[x]leading space in file name");
@@ -138,13 +130,20 @@ implements Log{
     return;
   }
 
-  private void checkNameForAlreadyExisting(String name)
-  throws NeedFixCode{
+  private void checkNameForAlreadyExisting(String name){
     String path = LOGS_DIRECTORY + name;
     File fileToCheck = new File(path);
     boolean isAlreadyExists = fileToCheck.exists();
     if(isAlreadyExists){
       throw new NeedFixCode("[x]such file name is already exists");
+    }
+    return;
+  }
+
+  private void checkClock(Clock clock){
+    if(clock == null){
+      Dbg.out("[x][LogUnit]link to clock unit is null");
+      throw new NeedFixCode("[x]link to clock unit is null");
     }
     return;
   }

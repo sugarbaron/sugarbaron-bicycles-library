@@ -1,5 +1,5 @@
-//[author: sugarbaron ([sugarbaron_bicycles] e-mail:sugarbaron1@mail.ru)]
-//[date: 30.08.2016]
+/* author: sugarbaron ([sugarbaron_bicycles] e-mail:sugarbaron1@mail.ru)
+   date: 30.08.2016 */
 package ru.sugarbaron_bicycles.library.log;
 
 import ru.sugarbaron_bicycles.library.exceptions.*;
@@ -29,8 +29,7 @@ public final class LogToolkit{
    *                        program, because of errors in code.
    *
    * @throws CriticalOperationFailed  - in case of system operations fails */
-  public synchronized static void createLog(String logFileName, Clock clock)
-  throws NeedFixCode, CriticalOperationFailed{
+  public static synchronized void createLog(String logFileName, Clock clock){
     //[checking parameters validation]
     if( (null == logFileName)||(null == clock) ){
       throw new NeedFixCode("[x]wrong parameters for #createLog() method");
@@ -57,8 +56,7 @@ public final class LogToolkit{
    *                        because of errors in code.
    *
    * @return log for specified file name */
-   public synchronized static Log getLog(String logFileName)
-   throws NeedFixCode{
+   public static synchronized Log getLog(String logFileName){
      boolean isDetected;
      for(int i=0; i<currentLogsQuantity; i++){
        isDetected = logFilesNames[i].equals(logFileName);

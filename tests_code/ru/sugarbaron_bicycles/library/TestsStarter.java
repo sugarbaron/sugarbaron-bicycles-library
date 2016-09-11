@@ -3,9 +3,9 @@
 package ru.sugarbaron_bicycles.library;
 
 import org.junit.Test;
-import ru.sugarbaron_bicycles.library.log.LogToolkitTest;
-import ru.sugarbaron_bicycles.library.log.LogUnitTest;
-import ru.sugarbaron_bicycles.library.time.ClockUnitTest;
+import ru.sugarbaron_bicycles.library.log.*;
+import ru.sugarbaron_bicycles.library.state_machine.*;
+import ru.sugarbaron_bicycles.library.time.*;
 
 public final class TestsStarter{
   @Test
@@ -23,6 +23,9 @@ public final class TestsStarter{
     logToolkitTest.setUp();
     logToolkitTest.testCreateLog();
     logToolkitTest.testGetLog();
+
+    StateMachineTest stateMachineTest = new StateMachineTest();
+    stateMachineTest.run();
     return;
   }
 }

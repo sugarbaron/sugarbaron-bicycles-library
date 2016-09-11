@@ -11,7 +11,7 @@ package ru.sugarbaron_bicycles.library.exceptions;
  * @author sugarbaron ([sugarbaron_bicycles] sugarbaron1@mail.ru)
  */
 public final class NeedFixCode
-extends Exception{
+extends RuntimeException{
   //serial version uid
   private static final long serialVersionUID = 1L;
   

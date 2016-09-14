@@ -6,7 +6,7 @@ import ru.sugarbaron_bicycles.library.exceptions.*;
 
 
 /**
- * this class gives tools for working withdifferent "randoms"
+ * this class gives tools for working with  different "randoms"
  * 
  * @author sugarbaron ([sugarbaron_bicycles] e-mail:sugarbraon1@mail.ru)
  */
@@ -15,33 +15,25 @@ import ru.sugarbaron_bicycles.library.exceptions.*;
    ////////////////////////////////////////////////////////////////////////////
    /**
     * choose randomly one of #n variants. #n is specified by argument.
-    * 
-    * @param variantsQuantity  it is #n. quanity of variants for random choose.
-    * 
-    * @return randomly choosed variant. value belongs [0, #n-1] 
-    * 
-    * @throws NeedFixCode  if argument is wrong,
-    *                      or if was detected wrong work of a
-    *                      programm, because of errors in code.
-    */
+    * @param variantsQuantity  it is #n. quantity of variants for random choose.
+    * @return randomly chosen variant. value belongs [0, #n-1]
+    * @throws NeedFixCode  if argument is wrong */
    static public int roll(int variantsQuantity)
    throws NeedFixCode{
-     if(!(variantsQuantity > 0)){
+     //[checking arguments correctness]
+     if( !(variantsQuantity > 0) ){
        throw new NeedFixCode("[x][Random]#roll():negative argument");
      }
-     //[rolling]
-     double roll            = Math.random();
-     //[calculating interval value]
-     double interval        = 1.0/variantsQuantity;
-     //[defining interval, which contains rolled value]
+
+     final double MAX_RANDOM = 1.0;
+     double roll = Math.random();
+     double interval = MAX_RANDOM/variantsQuantity;
      double intervalsInRoll = roll/interval;
-     //[converting to int]
-     int result             = (int)intervalsInRoll;
-     //[special case]
+     int result = (int)intervalsInRoll;
+     //[special case. (if Math.random() has returned 1.0)]
      if(result == variantsQuantity){
-       result = result - 1;
+       result = 0;
      }
-     //[profit!]
      return result;
    }
  }

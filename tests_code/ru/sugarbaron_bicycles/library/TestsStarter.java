@@ -6,6 +6,7 @@ import org.junit.Test;
 import ru.sugarbaron_bicycles.library.log.*;
 import ru.sugarbaron_bicycles.library.state_machine.*;
 import ru.sugarbaron_bicycles.library.time.*;
+import ru.sugarbaron_bicycles.library.random.*;
 
 public final class TestsStarter{
   @Test
@@ -26,6 +27,9 @@ public final class TestsStarter{
 
     StateMachineTest stateMachineTest = new StateMachineTest();
     stateMachineTest.run();
+
+    RandomTest randomTest = new RandomTest();
+    randomTest.testRoll();
     return;
   }
 }

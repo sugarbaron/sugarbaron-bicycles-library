@@ -1,15 +1,12 @@
+/* author: sugarbaron ([sugarbaron_bicycles] e-mail:sugarbaron1@mail.ru)
+   date: 14.09.2016 */
 package ru.sugarbaron_bicycles.library.random;
 
 //[my bicycles]
 import ru.sugarbaron_bicycles.library.exceptions.*;
 
-
-
 /**
- * this class gives tools for working with  different "randoms"
- * 
- * @author sugarbaron ([sugarbaron_bicycles] e-mail:sugarbraon1@mail.ru)
- */
+ * this class provides tools for working with  different "randoms" */
  final public class Random{
    //primary_section___________________________________________________________
    ////////////////////////////////////////////////////////////////////////////

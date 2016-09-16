@@ -6,7 +6,7 @@ package ru.sugarbaron_bicycles.library.exceptions;
  * this exception is using in cases, when
  * some system operation is failed and this fact
  * does not allow continue execution of a program. */
- public class CriticalOperationFailed
+ public final class CriticalOperationFailed
  extends RuntimeException{
    private static final long serialVersionUID = 1L;
    

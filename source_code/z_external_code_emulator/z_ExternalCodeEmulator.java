@@ -5,7 +5,6 @@ package z_external_code_emulator;
 //[my bicycles]
 import ru.sugarbaron_bicycles.library.time.*;
 import ru.sugarbaron_bicycles.library.log.*;
-import ru.sugarbaron_bicycles.library.state_machine.*;
 
 import z_external_code_emulator.state_machine.*;
 

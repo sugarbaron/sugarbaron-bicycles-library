@@ -33,9 +33,10 @@ public final class TestsStarter{
     randomTest.testRoll();
 
     ExceptionsTest exceptionsTest = new ExceptionsTest();
-    exceptionsTest.testCriticalOperationFailed();
     exceptionsTest.testNeedFixCode();
+    exceptionsTest.testCriticalOperationFailed();
     exceptionsTest.testExecutionAborted();
+    exceptionsTest.testWhatAFuck();
     return;
 
   }

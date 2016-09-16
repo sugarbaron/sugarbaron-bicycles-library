@@ -2,8 +2,6 @@
    date: 14.09.2016 */
 package ru.sugarbaron_bicycles.library.exceptions;
 
-import org.junit.Test;
-
 public class ExceptionsTest{
   public ExceptionsTest(){
     return;
@@ -11,53 +9,38 @@ public class ExceptionsTest{
 
   public void testNeedFixCode(){
     try{
-      throwNeedFixCode();
+      throw new NeedFixCode("test");
     }
     catch(NeedFixCode exception){
-      /* here must be catch expected NeedFixCode */
+      /* here we catch expected NeedFixCode */
     }
     return;
   }
 
-  @Test(expected = NeedFixCode.class)
-  private void throwNeedFixCode(){
-    throw new NeedFixCode("test");
-  }
-
   public void testCriticalOperationFailed(){
     try{
-      throwCriticalOperationFailed();
+      throw new CriticalOperationFailed("test");
     }
     catch(CriticalOperationFailed exception){
-      /* here must be catch expected CriticalOperation */
+      /* here we catch expected CriticalOperation */
     }
-  }
-
-  @Test(expected = CriticalOperationFailed.class)
-  private void throwCriticalOperationFailed(){
-    throw new CriticalOperationFailed("test");
   }
 
   public void testExecutionAborted(){
     try{
-      throwExecutionAborted();
+      throw new ExecutionAborted("test");
     }
     catch(ExecutionAborted exception){
-      /* here must be catch expected ExecutionAborted */
+      /* here we catch expected ExecutionAborted */
     }
-  }
-
-  @Test(expected = ExecutionAborted.class)
-  private void throwExecutionAborted(){
-    throw new ExecutionAborted("test");
   }
 
   public void testWhatAFuck(){
     try{
-      throwWhatAFuck();
+      throw new WhatAFuck("test");
     }
     catch(WhatAFuck exception){
-
+      /* here we catch expected WhatAFuck */
     }
     return;
   }

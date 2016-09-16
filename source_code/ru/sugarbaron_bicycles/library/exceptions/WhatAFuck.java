@@ -2,11 +2,11 @@
    date: 12.09.2016 */
 package ru.sugarbaron_bicycles.library.exceptions;
 
-public class WhatAFuckException
+public class WhatAFuck
 extends Exception{
   private static final long serialVersionUID = 1L;
 
-  public WhatAFuckException(String message){
+  public WhatAFuck(String message){
     super(message);
     return;
   }

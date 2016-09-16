@@ -3,6 +3,7 @@
 package ru.sugarbaron_bicycles.library;
 
 import org.junit.Test;
+import ru.sugarbaron_bicycles.library.exceptions.*;
 import ru.sugarbaron_bicycles.library.log.*;
 import ru.sugarbaron_bicycles.library.state_machine.*;
 import ru.sugarbaron_bicycles.library.time.*;
@@ -30,6 +31,12 @@ public final class TestsStarter{
 
     RandomTest randomTest = new RandomTest();
     randomTest.testRoll();
+
+    ExceptionsTest exceptionsTest = new ExceptionsTest();
+    exceptionsTest.testCriticalOperationFailed();
+    exceptionsTest.testNeedFixCode();
+    exceptionsTest.testExecutionAborted();
     return;
+
   }
 }

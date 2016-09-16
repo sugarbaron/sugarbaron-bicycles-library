@@ -5,6 +5,8 @@ package z_external_code_emulator;
 //[my bicycles]
 import ru.sugarbaron_bicycles.library.time.*;
 import ru.sugarbaron_bicycles.library.log.*;
+import ru.sugarbaron_bicycles.library.exceptions.*;
+import ru.sugarbaron_bicycles.library.random.*;
 
 import z_external_code_emulator.state_machine.*;
 
@@ -14,6 +16,8 @@ class z_ExternalCodeEmulator{
     useTimeLibraryUnit();
     useLogLibraryUnit();
     useStateMachineLibraryUnit();
+    useRandom();
+    useExceptions();
     return;
   }
 
@@ -49,6 +53,28 @@ class z_ExternalCodeEmulator{
     }
 
     machine.getPreviousState();
+    return;
+  }
+
+  private static void useRandom(){
+    Random.roll(5);
+    return;
+  }
+
+  private static void useExceptions(){
+    int rollResult = Random.roll(5);
+    if(rollResult > 5){
+      throw new NeedFixCode("example of exception using");
+    }
+    if(rollResult > 6){
+      throw new CriticalOperationFailed("example of exception using");
+    }
+    if(rollResult > 7){
+      throw new ExecutionAborted("example of exception using");
+    }
+    if(rollResult > 8){
+      throw new WhatAFuck("example of exception using");
+    }
     return;
   }
 }

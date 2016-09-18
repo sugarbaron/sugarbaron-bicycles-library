@@ -1,55 +1,53 @@
+/* author: sugarbaron ([sugarbaron_bicycles] e-mail:sugarbaron1@mail.ru)
+   date: 18.09.2016 */
 package ru.sugarbaron_bicycles.library.synchronization;
 
 
 
 /**
  * wrap for #java.util.concurrent.Semaphore with handling of interruption
- * while waiting for semaphore releasing
- * 
- * @author sugarbaron ([sugarbaron_bicycles] e-mail:sugarbaron1@mail.ru)
- */
+ * while waiting for semaphore releasing */
 public final class Semaphore{
   //data_section_______________________________________________________________
   /////////////////////////////////////////////////////////////////////////////
-  /** semaphore */
   private java.util.concurrent.Semaphore semaphore;
   
-  //consrtucrors_section_______________________________________________________
+  //constructors_section_______________________________________________________
   /////////////////////////////////////////////////////////////////////////////
   /** 
-   * create semaphore
+   * create new semaphore
    * 
-   * @param semaphoreCounter  initial value of semaphore counter
-   */
-  public Semaphore(int semaphoreCounter){
+   * @param semaphoreCounter  initial value of semaphore counter */
+  public static synchronized Semaphore createNew(int semaphoreCounter){
+    Semaphore newSemaphore = new Semaphore(semaphoreCounter);
+    return newSemaphore;
+  }
+
+  private Semaphore(int semaphoreCounter){
     semaphore = new java.util.concurrent.Semaphore(semaphoreCounter);
+    return;
   }
   
-  //primary_section____________________________________________________________
+  //methods_section____________________________________________________________
   /////////////////////////////////////////////////////////////////////////////
-  /**
-   * wait for semaphore signal
-   */
+  /** wait for semaphore signal */
   public void waitSignal(){
-    for( ; true ; ){
+    boolean signalIsNotReceived = true;
+    while(signalIsNotReceived){
       try{
-        //[waiting for semaphore signal]
         semaphore.acquire();
-        //[semaphore signal received. profit!]
-        break;
+        signalIsNotReceived = false;
       }
-      catch(InterruptedException x){
+      catch(InterruptedException exception){
         //[wtf?!? we need to wait for semaphore signal]
-        continue;
       }
     }
     return;
   }
    
-  /**
-   * give semaphore signal
-   */
-  public void giveSignal(){
+  /** receive waited semaphore signal. */
+  public synchronized void receiveSignal(){
     semaphore.release();
+    return;
   }
 } 

@@ -2,14 +2,11 @@
    date: 12.09.2016 */
 package ru.sugarbaron_bicycles.library.exceptions;
 
-/**
- * this exception is for cases, when the final goal of method was
- * not reached because of different external conditions */
-public final class ExecutionAborted
+public final class WhatAFuck
 extends RuntimeException{
   private static final long serialVersionUID = 1L;
-  
-  public ExecutionAborted(String message){
+
+  public WhatAFuck(String message){
     super(message);
     return;
   }

@@ -1,37 +1,32 @@
+/* author: sugarbaron ([sugarbaron_bicycles] e-mail:sugarbaron1@mail.ru)
+   date: 25.08.2016 */
 package ru.sugarbaron_bicycles.library.time;
 
 /**
- * this class describes a millisecond clock.
- * based on mechanism of #System.nanotime() 
- * 
- * @author sugarbaron ([sugarbaron_bicycles] e-mail:sugarbaron1@mail.ru)
- */
-final public class ClockUnit{
+ * this class provides a millisecond clock.
+ * based on mechanism of #System.nanotime() */
+public final class ClockUnit
+implements Clock{
   //data_section_______________________________________________________________
   /////////////////////////////////////////////////////////////////////////////
   /** system time (in nanoseconds) when #this object was created */
   private long start_point = 0;
   
-  //constructors_section_______________________________________________________
+  //constructors_and_factories_section_______________________________________________________
   /////////////////////////////////////////////////////////////////////////////
-  /**
-   * create clock unit
-   */
   public ClockUnit(){
     this.start_point = System.nanoTime();
   }
   
-  //primary_section____________________________________________________________
+  //methods_section____________________________________________________________
   /////////////////////////////////////////////////////////////////////////////
   /**
-   * get current time value. actually, this method returns a value of time
-   * interval betveen creation of this #ClockUnit object and invocation of
-   * this method.
+   * get current time value for this clock.
    * 
-   * @return time value (in milliseconds).
-   */
-  public long time(){
-    long ms = (System.nanoTime() - this.start_point)/1000000L;
+   * @return time value (in milliseconds). */
+  public long getTime(){
+    long ms;
+    ms = (System.nanoTime() - this.start_point)/1000000L;
     return ms;
   }
 }

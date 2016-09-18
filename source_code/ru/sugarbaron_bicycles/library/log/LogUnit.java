@@ -1,3 +1,5 @@
+/* author: sugarbaron ([sugarbaron_bicycles] e-mail:sugarbaron1@mail.ru)
+   date: 27.08.2016 */
 package ru.sugarbaron_bicycles.library.log;
 
 //[standard libraries]
@@ -9,51 +11,20 @@ import ru.sugarbaron_bicycles.library.time.*;
 
 
 /**
- * instance of <code>LogUnit</code> class creates the log file and allows to
- * register any event of users program. also allows to trace users program and
- * can use for debugging.
- * 
- * every record in log contains the time point. it shows when <code>write</code>
- * method was invoked.
- * 
- * <code>LogUnit</code> class requires <code>ClockUnit</code> instance for using
- * 
- * api of LogUnit class:
- * 01.LogUnit(filename, clock)
- *    - constructor
- *     
- * 02.void write(printfStyleString, parameter1, parameter2, ...)
- *    - writing record to log
- * 
- * @author sugarbaron ([sugarbaron_bicycles] e-mail: sugarbaron1@mail.ru)
- */
-public final class LogUnit{
+ * provides a log tool for journaling ability.
+ * every record in log contains the time point. it shows when this record was made. */
+final class LogUnit
+implements Log{
   //data_section_______________________________________________________________
   /////////////////////////////////////////////////////////////////////////////
-  //max length of file name
-  private final int MAX_FILENAME_LENGTH = 20;
-  
-  //log file
-  private File         logFile;
-  //tool for writing records to log file
-  private FileWriter   logWriter;
-  //directory, which contains log files
-  private File         logsDir;
-  //link to clock unit
-  private ClockUnit    systemClock;
-  //tool for constructing log record
-  private Formatter    recordConstructor;
-  //buffer, where the record is constructing
-  private StringBuffer buffer;
-  //file, whith errors occured during LogUnit works
-  private File         errFile;
-  //tool for writing records to "log_errors.txt"
-  private PrintWriter  errWriter;
-  //log record
-  private String       record;
-  
-  
-  
+  private final String LOGS_DIRECTORY = "logs/";
+
+  private File logFile;
+  private Clock systemClock;
+  private FileWriter logWriter;
+  private Formatter  recordConstructor;
+  private StringBuffer recordConstructorResult;
+
   //constructors_section_______________________________________________________
   /////////////////////////////////////////////////////////////////////////////
   /**
@@ -61,242 +32,238 @@ public final class LogUnit{
    * creates a new LogUnit instance.
    * creates "./logs" directory, if it not exist.
    * creates log file inside "logs" directory.
-   * creates "log_errors" file inside "logs" directory.
-   * 
+   *
    * @param fileName    name of log file
-   * @param clock       link to ClockUnit for registering time of every record
+   * @param clock       link to #Clock for registering time of every record
    * 
-   * @throws NeedFixCode              if file name contains denied characters,
-   *                                  or if it is too long,
-   *                                  or if it is null,
-   *                                  or if "clock" argument is null,
-   *                                  or if was detected wrong work of a
-   *                                    programm, because of errors in code.
+   * @throws NeedFixCode    if arguments are invalid,
+   *                        or if was detected wrong work of a
+   *                        program, because of errors in code.
    *                                    
-   * @throws CriticalOperationFailed  if can't create "logs" directory, or
-   *                                  if an IOException appears while working
-   *                                  <code>new FileWriter(logFile)</code>, or
-   *                                  FileNotFoundException appears while
-   *                                    working <code>new PrintWriter()</code>,
+   * @throws CriticalOperationFailed  if can't create "logs" directory,
+   *                                  or if an IOException appears while working
+   *                                    <code>new FileWriter(logFile)</code>,
    *                                  or if some operation was failed, and this
    *                                    fact does not allow continue execution
-   *                                    of a programm.
-   */
-  LogUnit(String fileName, ClockUnit clock)
-  throws NeedFixCode, CriticalOperationFailed{
-    boolean isOk = false;
-    
-    //1)checking parameters validtion:
-    //checking link to clock unit
-    if(clock == null){
-      Dbg.out("[x][LogUnit]link to clock unit is null");
-      throw new NeedFixCode("[x]link to clock unit is null");
-    }
-    //checking log file name
+   *                                    of a program. */
+  LogUnit(String fileName, Clock clock){
+    //[checking arguments correctness]
     checkLogFileName(fileName);
+    checkClock(clock);
 
-    //2)creating and opening log file
-    //creating directory for logs
-    logsDir = new File("logs/");
-    //maybe such directory is already exists
-    if(!logsDir.exists()){
-      //if not exists - creating
-      isOk = logsDir.mkdir();
-      if(!isOk){
-        Dbg.out("[x][LogUnit]creating log directory: failed");
-        throw new CriticalOperationFailed("[x]creating log directory: failed"); 
-      }
-    }
-    
-    //creating log file
-    logFile = new File(logsDir, fileName);
-    
-    //3)creating writer
-    try{
-      logWriter = new FileWriter(logFile);
-    }
-    catch(IOException exc){
-      Dbg.out("[x][LogUnit]error constructing FileWriter");
-      throw new CriticalOperationFailed(exc);
-    }
-    
-    //4)saving link to clock unit
+    File logsDirectory = createLogsDirectory();
+    logFile = new File(logsDirectory, fileName);
+    logWriter = createLogWriter();
     systemClock = clock;
-    
-    //5)creating buffer, where log records will be constructed
-    buffer = new StringBuffer();
-    
-    //6)creating record consructor
-    recordConstructor = new Formatter(buffer);
-    
-    //7)creating errFile
-    String errFileName = "0_errors_of_" + fileName;
-    errFile = new File(logsDir, errFileName);
-    
-    //8)initialising errWriter
-    try{
-      errWriter = new PrintWriter(errFile);
-    }
-    catch(FileNotFoundException exc){
-      Dbg.out("[x][LogUnit]troubles with errFile");
-      throw new CriticalOperationFailed(exc);
-    }
-  }
-  
-  //primary_section__________________________________________________
-  ///////////////////////////////////////////////////////////////////
-  /**
-   * writing record to log. (primary method of this class)
-   * takes printf-style parameters.
-   * 
-   * @param text          string for writing to log. can to contain
-   *                      printf-style format specifiers.
-   * @param parameters    parameters for registering in log file.
-   */
-  public synchronized void write(String text, Object... parameters){
-    long time = systemClock.time();
-    
-    //checking parameters validation
-    if(text == null){
-      writeError("[%010d][x][LogUnit]text is null \n", time);
-      return;  
-    }
-    
-    //constucting record (step 1)
-    recordConstructor.format(text, parameters);
-    record = buffer.toString();
-    
-    //cleaning buffer
-    buffer.delete(0, buffer.length());
-    
-    //constucting record (step 2)
-    recordConstructor.format("[%010d]%s \n", time, record);
-    record = buffer.toString();
-    
-    //cleaning buffer
-    buffer.delete(0, buffer.length());
-    
-    //writing record to log
-    try{
-      logWriter.write(record, 0, record.length());
-      logWriter.flush();
-    }
-    catch(IOException exc){
-      writeError("[%010d][x][LogUnit]%s \n", time, exc.toString());
-    }
-    
+    recordConstructorResult = new StringBuffer();
+    recordConstructor = new Formatter(recordConstructorResult);
     return;
   }
-  
-  //secondary_section________________________________________________
-  ///////////////////////////////////////////////////////////////////
+
   /**
    * checking correction of name for log file. characters, besides
    * an english letters, "(", ")", "[", "]", "{", "}" ".", "_", " ",
    * "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" are not allowed.
    * leading space is not allowed. long name (more than MAX_FILENAME_LENGTH)
    * is not allowed.
-   * 
+   *
    * @param fileName    name of log file for checking
-   * 
-   * @throws BadFileNameException    if <code>fileName</code> contains denied
-   *                                 characters (see method description), or
-   *                                 if it is null.
-   */
-  private void checkLogFileName(String fileName) 
-  throws NeedFixCode{
-    //length of file name
-    int length = 0;
-    
-    //1)checking for "null"
-    if(fileName == null){
+   *
+   * @throws NeedFixCode    if <code>fileName</code> is invalid */
+  private void checkLogFileName(String fileName){
+    checkNameForNull(fileName);
+    checkNameLength(fileName);
+    checkNameForDeniedCharacters(fileName);
+    checkNameForLeadingSpace(fileName);
+    checkNameForAlreadyExisting(fileName);
+    return;
+  }
+
+  private void checkNameForNull(String name){
+    if(name == null){
       Dbg.out("[x][LogUnit]fileName is null");
       throw new NeedFixCode("[x]fileName is null");
     }
-    
-    //2)checking length of file name
-    length = fileName.length();
-    if(!( (length > 0)&&(length <= MAX_FILENAME_LENGTH) )){
+    return;
+  }
+
+  private void checkNameLength(String name){
+    final int MAX_FILENAME_LENGTH = 80;
+    int length = name.length();
+    boolean isLengthCorrect = ( (length > 0)&&(length <= MAX_FILENAME_LENGTH) );
+    if(isLengthCorrect == false){
       Dbg.out("[x][LogUnit]too big length of file name");
       throw new NeedFixCode("[x]too big length of file name");
     }
-    
-    //3)checking for characters, which are out of allowed range
-    for(int i=0; i<length; i++){
-      int character = fileName.codePointAt(i);
-      boolean isCorrectCharacter;
-      isCorrectCharacter =  ((character == 0x20)||  // <space>
-                             (character == 0x28)||  // (
-                             (character == 0x29)||  // )
-                             (character == 0x2e)||  // .
-                             (character == 0x5d)||  // ]
-                             (character == 0x5f)||  // _
-                             (character == 0x7d)||  // }
-      ((character >= 0x30)&&(character <= 0x39))||  // 0...9
-      ((character >= 0x41)&&(character <= 0x5b))||  // A...Z [
-      ((character >= 0x61)&&(character <= 0x7b)));  // a...z {
+    return;
+  }
 
-      if(!isCorrectCharacter){
+  private void checkNameForDeniedCharacters(String name){
+    int length = name.length();
+    for(int i=0; i<length; i++){
+      int character = name.codePointAt(i);
+      boolean isCharacterCorrect;
+      isCharacterCorrect =  ((character == 0x20)||  // <space>
+        (character == 0x28)||  // (
+        (character == 0x29)||  // )
+        (character == 0x2e)||  // .
+        (character == 0x5d)||  // ]
+        (character == 0x5f)||  // _
+        (character == 0x7d)||  // }
+        ((character >= 0x30)&&(character <= 0x39))||  // 0...9
+        ((character >= 0x41)&&(character <= 0x5b))||  // A...Z [
+        ((character >= 0x61)&&(character <= 0x7b)));  // a...z {
+
+      if(isCharacterCorrect == false){
         Dbg.out("[x][LogUnit]bad characters in log file name");
         throw new NeedFixCode("[x]bad characters in log file name");
       }
     }
-    
-    //4)leading space is not allowed
-    if(fileName.codePointAt(0) == 0x20){
+    return;
+  }
+
+  private void checkNameForLeadingSpace(String name){
+    if(name.codePointAt(0) == 0x20){
       Dbg.out("[x][LogUnit]leading space in file name");
       throw new NeedFixCode("[x]leading space in file name");
     }
-    
-    //5)what have i forget?
-    
     return;
   }
+
+  private void checkNameForAlreadyExisting(String name){
+    String path = LOGS_DIRECTORY + name;
+    File fileToCheck = new File(path);
+    boolean isAlreadyExists = fileToCheck.exists();
+    if(isAlreadyExists){
+      throw new NeedFixCode("[x]such file name is already exists");
+    }
+    return;
+  }
+
+  private void checkClock(Clock clock){
+    if(clock == null){
+      Dbg.out("[x][LogUnit]link to clock unit is null");
+      throw new NeedFixCode("[x]link to clock unit is null");
+    }
+    return;
+  }
+
+  private File createLogsDirectory()
+  throws CriticalOperationFailed{
+    File directory = new File(LOGS_DIRECTORY);
+    //[maybe such directory is already exists]
+    if(!directory.exists()){
+      //[if not exists - creating]
+      boolean isOk = directory.mkdir();
+      if(isOk == false){
+        Dbg.out("[x][LogUnit]creating log directory: failed");
+        throw new CriticalOperationFailed("[x]creating log directory: failed");
+      }
+    }
+    return directory;
+  }
+
+  private FileWriter createLogWriter()
+  throws CriticalOperationFailed{
+    FileWriter writer;
+    try{
+      writer = new FileWriter(logFile);
+    }
+    catch(IOException exception){
+      Dbg.out("[x][LogUnit]error constructing FileWriter");
+      throw new CriticalOperationFailed(exception);
+    }
+    return writer;
+  }
   
+  //methods_section__________________________________________________
+  ///////////////////////////////////////////////////////////////////
   /**
-   * writing message to <code>errFile</code>.
-   * using for registering errors, which appears while LogUnit is working.
-   * takes printf-style parameters.
+   * writing debug record to log. takes printf-style parameters.
    * 
    * @param text          string for writing to log. can to contain
    *                      printf-style format specifiers.
-   * @param parameters    parameters for registering in log file.
-   */
-   private synchronized void writeError(String text, Object... parameters){
-     errWriter.printf(text, parameters);
-     errWriter.flush();
-     return;
-   }
+   * @param parameters    parameters for registering in log file. */
+  public synchronized void debug(String text, Object... parameters){
+    text = "[dbg]" + text;
+    write(text, parameters);
+    return;
+  }
 
-  
-  //terminating______________________________________________________
-  ///////////////////////////////////////////////////////////////////
   /**
-   * ensures closing of log resources when the work is over.
-   * (destructor)
-   */
-  protected void finalize(){
-    //closing logWriter
-    try{
-      logWriter.close();
-    }
-    catch(IOException unusable){
-      long time = systemClock.time();
-      writeError("[%10][x][LogUnit]closing FileWriter error \n", time);
-    }
-    //closing recordConstructor
-    recordConstructor.close();
-    //closing errWriter
-    errWriter.close();
+   * writing error record to log. takes printf-style parameters.
+   *
+   * @param text          string for writing to log. can to contain
+   *                      printf-style format specifiers.
+   * @param parameters    parameters for registering in log file. */
+  public synchronized void error(String text, Object... parameters){
+    text = "[err]" + text;
+    write(text, parameters);
+    return;
+  }
+
+  /**
+   * writing warning record to log. takes printf-style parameters.
+   *
+   * @param text          string for writing to log. can to contain
+   *                      printf-style format specifiers.
+   * @param parameters    parameters for registering in log file. */
+  public synchronized void warning(String text, Object... parameters){
+    text = "[wrn]" + text;
+    write(text, parameters);
+    return;
+  }
+
+  private synchronized void write(String text, Object... parameters){
+    long time = systemClock.getTime();
     
-    logWriter         = null;
-    recordConstructor = null;
-    buffer            = null;
-    errWriter         = null;
-    errFile           = null;
-    logFile           = null;
-    logsDir           = null;
-    systemClock       = null;
-    record            = null;
+    //[checking arguments correctness]
+    if(text == null){
+      return;
+    }
+    
+    //[constructing record (step 1):combining text and parameters]
+    String record;
+    recordConstructor.format(text, parameters);
+    record = recordConstructorResult.toString();
+    makeEmpty(recordConstructorResult);
+
+    //[constructing record (step 2):prepending time]
+    recordConstructor.format("[%010d]%s \n", time, record);
+    record = recordConstructorResult.toString();
+    makeEmpty(recordConstructorResult);
+
+    writeRecordToFile(record);
+    return;
+  }
+
+  private void makeEmpty(StringBuffer buffer){
+    final int BEGIN_INDEX = 0;
+    final int END_INDEX = buffer.length();
+    buffer.delete(BEGIN_INDEX, END_INDEX);
+    return;
+  }
+
+  private void writeRecordToFile(String record){
+    try{
+      logWriter.write(record, 0, record.length());
+      logWriter.flush();
+    }
+    catch(IOException exception){
+      /* negative try of writing record to file must not became
+       * a reason of breaking application work. doing nothing */
+    }
+    return;
+  }
+
+  /**
+   * release LogUnit instance resources
+   *
+   * @throws IOException  in case of problems with closing FileWriter */
+  public void close()
+  throws IOException{
+    recordConstructor.close();
+    logWriter.close();
+    return;
   }
 }

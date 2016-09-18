@@ -1,17 +1,15 @@
+/* author: sugarbaron ([sugarbaron_bicycles] e-mail:sugarbaron1@mail.ru)
+   date: 18.09.2016 */
 package ru.sugarbaron_bicycles.library.synchronization;
 
 
 
 /**
  * wrap for #java.util.concurrent.Semaphore with handling of interruption
- * while waiting for semaphore releasing
- * 
- * @author sugarbaron ([sugarbaron_bicycles] e-mail:sugarbaron1@mail.ru)
- */
+ * while waiting for semaphore releasing */
 public final class Semaphore{
   //data_section_______________________________________________________________
   /////////////////////////////////////////////////////////////////////////////
-  /** semaphore */
   private java.util.concurrent.Semaphore semaphore;
   
   //consrtucrors_section_______________________________________________________
@@ -19,37 +17,29 @@ public final class Semaphore{
   /** 
    * create semaphore
    * 
-   * @param semaphoreCounter  initial value of semaphore counter
-   */
+   * @param semaphoreCounter  initial value of semaphore counter */
   public Semaphore(int semaphoreCounter){
     semaphore = new java.util.concurrent.Semaphore(semaphoreCounter);
   }
   
   //primary_section____________________________________________________________
   /////////////////////////////////////////////////////////////////////////////
-  /**
-   * wait for semaphore signal
-   */
+  /** wait for semaphore signal */
   public void waitSignal(){
     for( ; true ; ){
       try{
-        //[waiting for semaphore signal]
         semaphore.acquire();
-        //[semaphore signal received. profit!]
         break;
       }
-      catch(InterruptedException x){
+      catch(InterruptedException exception){
         //[wtf?!? we need to wait for semaphore signal]
-        continue;
       }
     }
     return;
   }
    
-  /**
-   * give semaphore signal
-   */
-  public void giveSignal(){
+  /** receive waited semaphore signal. */
+  public void receiveSignal(){
     semaphore.release();
   }
 } 

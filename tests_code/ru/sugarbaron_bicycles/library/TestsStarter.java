@@ -8,6 +8,7 @@ import ru.sugarbaron_bicycles.library.log.*;
 import ru.sugarbaron_bicycles.library.state_machine.*;
 import ru.sugarbaron_bicycles.library.time.*;
 import ru.sugarbaron_bicycles.library.random.*;
+import ru.sugarbaron_bicycles.library.synchronization.*;
 
 public final class TestsStarter{
   @Test
@@ -37,6 +38,9 @@ public final class TestsStarter{
     exceptionsTest.testCriticalOperationFailed();
     exceptionsTest.testExecutionAborted();
     exceptionsTest.testWhatAFuck();
+
+    SemaphoreTest semaphoreTest = new SemaphoreTest();
+    semaphoreTest.run();
     return;
 
   }

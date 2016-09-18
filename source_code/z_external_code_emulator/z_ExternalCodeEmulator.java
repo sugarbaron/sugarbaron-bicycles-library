@@ -7,6 +7,7 @@ import ru.sugarbaron_bicycles.library.time.*;
 import ru.sugarbaron_bicycles.library.log.*;
 import ru.sugarbaron_bicycles.library.exceptions.*;
 import ru.sugarbaron_bicycles.library.random.*;
+import ru.sugarbaron_bicycles.library.synchronization.*;
 
 import z_external_code_emulator.state_machine.*;
 
@@ -18,6 +19,7 @@ class z_ExternalCodeEmulator{
     useStateMachineLibraryUnit();
     useRandom();
     useExceptions();
+    useSemaphore();
     return;
   }
 
@@ -75,6 +77,13 @@ class z_ExternalCodeEmulator{
     if(rollResult > 8){
       throw new WhatAFuck("example of exception using");
     }
+    return;
+  }
+
+  private static void useSemaphore(){
+    Semaphore semaphore = Semaphore.createNew(0);
+    semaphore.receiveSignal();
+    semaphore.waitSignal();
     return;
   }
 }

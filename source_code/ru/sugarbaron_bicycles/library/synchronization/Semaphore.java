@@ -12,24 +12,31 @@ public final class Semaphore{
   /////////////////////////////////////////////////////////////////////////////
   private java.util.concurrent.Semaphore semaphore;
   
-  //consrtucrors_section_______________________________________________________
+  //constructors_section_______________________________________________________
   /////////////////////////////////////////////////////////////////////////////
   /** 
-   * create semaphore
+   * create new semaphore
    * 
    * @param semaphoreCounter  initial value of semaphore counter */
-  public Semaphore(int semaphoreCounter){
+  public static synchronized Semaphore createNew(int semaphoreCounter){
+    Semaphore newSemaphore = new Semaphore(semaphoreCounter);
+    return newSemaphore;
+  }
+
+  private Semaphore(int semaphoreCounter){
     semaphore = new java.util.concurrent.Semaphore(semaphoreCounter);
+    return;
   }
   
-  //primary_section____________________________________________________________
+  //methods_section____________________________________________________________
   /////////////////////////////////////////////////////////////////////////////
   /** wait for semaphore signal */
-  public void waitSignal(){
-    for( ; true ; ){
+  public synchronized void waitSignal(){
+    boolean signalIsNotReceived = true;
+    while(signalIsNotReceived){
       try{
         semaphore.acquire();
-        break;
+        signalIsNotReceived = false;
       }
       catch(InterruptedException exception){
         //[wtf?!? we need to wait for semaphore signal]
@@ -39,7 +46,8 @@ public final class Semaphore{
   }
    
   /** receive waited semaphore signal. */
-  public void receiveSignal(){
+  public synchronized void receiveSignal(){
     semaphore.release();
+    return;
   }
 } 

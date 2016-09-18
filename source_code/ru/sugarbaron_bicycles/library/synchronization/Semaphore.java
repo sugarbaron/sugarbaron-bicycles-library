@@ -31,7 +31,7 @@ public final class Semaphore{
   //methods_section____________________________________________________________
   /////////////////////////////////////////////////////////////////////////////
   /** wait for semaphore signal */
-  public synchronized void waitSignal(){
+  public void waitSignal(){
     boolean signalIsNotReceived = true;
     while(signalIsNotReceived){
       try{

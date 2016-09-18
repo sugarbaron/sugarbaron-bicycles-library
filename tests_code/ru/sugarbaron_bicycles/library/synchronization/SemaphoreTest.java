@@ -45,12 +45,14 @@ public class SemaphoreTest{
     for(Consumer each: consumers){
       newThread = new Thread(each);
       consumersThreads.add(newThread);
+      newThread.start();
     }
     return;
   }
 
   private void startProducer(){
-    new Thread(producer);
+    Thread newThread = new Thread(producer);
+    newThread.start();
     return;
   }
 

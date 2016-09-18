@@ -3,8 +3,6 @@
 package ru.sugarbaron_bicycles.library.synchronization;
 
 import java.lang.*;
-//[my bicycles]
-import ru.sugarbaron_bicycles.library.log.*;
 
 class Consumer
 implements Runnable{
@@ -12,14 +10,12 @@ implements Runnable{
   /////////////////////////////////////////////////////////////////////////////
   private Data interthreadData;
   private int requiredIterationsQuantity;
-  private Log log;
 
   //constructors_section_______________________________________________________
   /////////////////////////////////////////////////////////////////////////////
   Consumer(Data dataExample, int quantity){
     interthreadData = dataExample;
     requiredIterationsQuantity = quantity;
-    log = LogToolkit.getLog("0");
     return;
   }
 
@@ -28,7 +24,6 @@ implements Runnable{
   public void run(){
     for(int i=0; i<requiredIterationsQuantity; i++){
       synchronized(this){
-        log.debug("consuming");
         interthreadData.consume();
       }
     }

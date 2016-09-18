@@ -3,22 +3,18 @@
 package ru.sugarbaron_bicycles.library.synchronization;
 
 import static org.junit.Assert.*;
-//[my bicycles]
-import ru.sugarbaron_bicycles.library.log.*;
 
 class Data{
   //data_section_______________________________________________________________
   /////////////////////////////////////////////////////////////////////////////
   private int quantityOfProduced;
   private Semaphore producingSignaler;
-  private Log log;
 
   //constructors_section_______________________________________________________
   /////////////////////////////////////////////////////////////////////////////
   Data(){
     quantityOfProduced  = 0;
     producingSignaler = Semaphore.createNew(0);
-    Log log = LogToolkit.getLog("0");
     return;
   }
 
@@ -37,7 +33,6 @@ class Data{
   }
 
   private synchronized void changeQuantity(int value){
-    log.debug("changing quantity: #%d", value);
     quantityOfProduced += value;
     checkCorrectness();
     return;

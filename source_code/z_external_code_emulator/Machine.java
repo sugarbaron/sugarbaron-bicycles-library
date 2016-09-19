@@ -1,11 +1,11 @@
 /* author: sugarbaron ([sugarbaron_bicycles] e-mail:sugarbaron1@mail.ru)]
    date: 11.09.2016 */
-package z_external_code_emulator.state_machine;
+package z_external_code_emulator;
 
 //[my bicycles]
 import ru.sugarbaron_bicycles.library.state_machine.*;
 
-public final class Machine{
+final class Machine{
   //data_section_______________________________________________________________
   /////////////////////////////////////////////////////////////////////////////
   private StateMachine stateMachine;
@@ -15,7 +15,7 @@ public final class Machine{
 
   //constructors_section_______________________________________________________
   /////////////////////////////////////////////////////////////////////////////
-  public Machine(){
+  Machine(){
     buildMachine();
   }
 
@@ -57,13 +57,13 @@ public final class Machine{
 
   //methods_section____________________________________________________________
   /////////////////////////////////////////////////////////////////////////////
-  public void makeStep()
+  void makeStep()
   throws Exception{
     stateMachine.makeStep();
     return;
   }
 
-  public boolean isStillWorking(){
+  boolean isStillWorking(){
     boolean isStillWorking = true;
     StateMachineState currentState = stateMachine.getCurrentState();
     if(currentState == exitState){
@@ -72,7 +72,7 @@ public final class Machine{
     return isStillWorking;
   }
 
-  public StateMachineState getPreviousState(){
+  StateMachineState getPreviousState(){
     StateMachineState previousState = stateMachine.getPreviousState();
     return previousState;
   }

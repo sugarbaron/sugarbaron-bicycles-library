@@ -8,9 +8,9 @@ import java.util.List;
 
 final class InitialisationState
 extends StateMachineState{
-  private List<StateHandlers> recorder;
+  private List<StatesHandlers> recorder;
 
-  InitialisationState(StateMachine machine, List<StateHandlers> recorder){
+  InitialisationState(StateMachine machine, List<StatesHandlers> recorder){
     super(machine);
     this.recorder = recorder;
     return;
@@ -19,21 +19,21 @@ extends StateMachineState{
   @Override
   protected void enter()
   throws Exception{
-    recorder.add(StateHandlers.INITIALISATION_ENTER);
+    recorder.add(StatesHandlers.INITIALISATION_ENTER);
     return;
   }
 
   @Override
   protected void activity()
   throws Exception{
-    recorder.add(StateHandlers.INITIALISATION_ACTIVITY);
+    recorder.add(StatesHandlers.INITIALISATION_ACTIVITY);
     return;
   }
 
   @Override
   protected void leave()
   throws Exception{
-    recorder.add(StateHandlers.INITIALISATION_LEAVE);
+    recorder.add(StatesHandlers.INITIALISATION_LEAVE);
     return;
   }
 }

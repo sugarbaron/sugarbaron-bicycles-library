@@ -4,7 +4,7 @@ package ru.sugarbaron_bicycles.library.synchronization;
 
 import java.lang.*;
 
-class Consumer
+final class Consumer
 implements Runnable{
   //data_section_______________________________________________________________
   /////////////////////////////////////////////////////////////////////////////

@@ -2,13 +2,20 @@
 //[date: 25.08.2016]
 package ru.sugarbaron_bicycles.library.log;
 
-import java.io.*;
-import static org.junit.Assert.*;
-//[my bicycles]
-import ru.sugarbaron_bicycles.library.exceptions.*;
-import ru.sugarbaron_bicycles.library.time.*;
+import static org.junit.Assert.assertTrue;
 
-public class LogUnitTest{
+import org.junit.Before;
+import org.junit.Test;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+//[my bicycles]
+import ru.sugarbaron_bicycles.library.exceptions.NeedFixCode;
+import ru.sugarbaron_bicycles.library.exceptions.CriticalOperationFailed;
+import ru.sugarbaron_bicycles.library.time.Clock;
+import ru.sugarbaron_bicycles.library.time.ClockUnit;
+
+public final class LogUnitTest{
   //data_section_______________________________________________________________
   /////////////////////////////////////////////////////////////////////////////
   static final String LOGS_DIRECTORY = "logs/";
@@ -34,20 +41,14 @@ public class LogUnitTest{
 
   //methods_section____________________________________________________________
   /////////////////////////////////////////////////////////////////////////////
+  @Before
   public void setUp(){
     clock = new ClockUnit();
     return;
   }
 
-  public void testLogUnit()
-  throws Exception{
-    testDebug();
-    testError();
-    testWarning();
-    return;
-  }
-
-  private void testDebug()
+  @Test
+  public void debug()
   throws Exception{
     final String DEBUG_LOG_FILE_NAME = "test_debug_record_log.txt";
     TestingLogsToolkit.deleteOldLog(DEBUG_LOG_FILE_NAME);
@@ -63,7 +64,8 @@ public class LogUnitTest{
     return;
   }
 
-  private void testError()
+  @Test
+  public void error()
     throws Exception{
     final String ERROR_LOG_FILE_NAME = "test_error_record_log.txt";
     TestingLogsToolkit.deleteOldLog(ERROR_LOG_FILE_NAME);
@@ -79,7 +81,8 @@ public class LogUnitTest{
     return;
   }
 
-  private void testWarning()
+  @Test
+  public void warning()
     throws Exception{
     final String WARNING_LOG_FILE_NAME = "test_warning_record_log.txt";
     TestingLogsToolkit.deleteOldLog(WARNING_LOG_FILE_NAME);

@@ -2,9 +2,9 @@
    date: 18.09.2016 */
 package ru.sugarbaron_bicycles.library.synchronization;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
-class Data{
+final class Data{
   //data_section_______________________________________________________________
   /////////////////////////////////////////////////////////////////////////////
   private int quantityOfProduced;

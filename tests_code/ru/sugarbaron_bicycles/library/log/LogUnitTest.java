@@ -15,7 +15,7 @@ import ru.sugarbaron_bicycles.library.exceptions.CriticalOperationFailed;
 import ru.sugarbaron_bicycles.library.time.Clock;
 import ru.sugarbaron_bicycles.library.time.ClockUnit;
 
-public class LogUnitTest{
+public final class LogUnitTest{
   //data_section_______________________________________________________________
   /////////////////////////////////////////////////////////////////////////////
   static final String LOGS_DIRECTORY = "logs/";

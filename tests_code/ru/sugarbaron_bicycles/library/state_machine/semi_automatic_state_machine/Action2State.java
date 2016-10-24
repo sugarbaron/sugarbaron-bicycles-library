@@ -8,9 +8,9 @@ import java.util.List;
 
 final class Action2State
   extends StateMachineState{
-  private List<StateHandlers> handlersRecorder;
+  private List<StatesHandlers> handlersRecorder;
 
-  Action2State(StateMachine machine, List<StateHandlers> handlersRecorder){
+  Action2State(StateMachine machine, List<StatesHandlers> handlersRecorder){
     super(machine);
     this.handlersRecorder = handlersRecorder;
     return;
@@ -19,14 +19,14 @@ final class Action2State
   @Override
   protected void enter()
   throws Exception{
-    handlersRecorder.add(StateHandlers.ACTION_2_ENTER);
+    handlersRecorder.add(StatesHandlers.ACTION_2_ENTER);
     return;
   }
 
   @Override
   protected void activity()
   throws Exception{
-    handlersRecorder.add(StateHandlers.ACTION_2_ACTIVITY);
+    handlersRecorder.add(StatesHandlers.ACTION_2_ACTIVITY);
 
     StateMachineSignal controlSignal = stateMachine.getSignalByName(SignalsNames.END_WORK);
     stateMachine.setNextStepSignal(controlSignal);
@@ -36,7 +36,7 @@ final class Action2State
   @Override
   protected void leave()
   throws Exception{
-    handlersRecorder.add(StateHandlers.ACTION_2_LEAVE);
+    handlersRecorder.add(StatesHandlers.ACTION_2_LEAVE);
     return;
   }
 }

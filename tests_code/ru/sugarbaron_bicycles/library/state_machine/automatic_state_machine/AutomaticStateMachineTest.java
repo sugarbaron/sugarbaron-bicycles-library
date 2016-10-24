@@ -2,6 +2,8 @@
    date: 04.09.2016 */
 package ru.sugarbaron_bicycles.library.state_machine.automatic_state_machine;
 
+import org.junit.Test;
+
 public final class AutomaticStateMachineTest{
   //data_section_______________________________________________________________
   /////////////////////////////////////////////////////////////////////////////
@@ -16,6 +18,8 @@ public final class AutomaticStateMachineTest{
 
   //methods_section____________________________________________________________
   /////////////////////////////////////////////////////////////////////////////
+
+  @Test
   public void run()
   throws Exception{
     machine.execute();

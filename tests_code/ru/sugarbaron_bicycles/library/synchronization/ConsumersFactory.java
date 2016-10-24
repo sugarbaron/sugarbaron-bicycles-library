@@ -5,7 +5,7 @@ package ru.sugarbaron_bicycles.library.synchronization;
 import java.util.List;
 import java.util.ArrayList;
 
-class ConsumersFactory{
+final class ConsumersFactory{
   //data_section_______________________________________________________________
   /////////////////////////////////////////////////////////////////////////////
   private List<Consumer> consumers;

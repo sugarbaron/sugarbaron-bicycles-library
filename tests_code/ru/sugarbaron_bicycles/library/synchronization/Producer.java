@@ -2,7 +2,7 @@
    date: 18.09.2016 */
 package ru.sugarbaron_bicycles.library.synchronization;
 
-class Producer
+final class Producer
 implements Runnable{
   //data_section_______________________________________________________________
   /////////////////////////////////////////////////////////////////////////////

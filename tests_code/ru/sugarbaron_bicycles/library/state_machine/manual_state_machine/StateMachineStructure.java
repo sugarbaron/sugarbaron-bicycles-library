@@ -19,8 +19,8 @@ final class StateMachineStructure{
   private StateMachineState exitState;
   private List<StateMachineState> expectedStatesOrder;
   private List<StateMachineState> realStatesOrder;
-  private List<StateHandlers> expectedInvocationsOrder;
-  private List<StateHandlers> realInvocationsOrder;
+  private List<StatesHandlers> expectedInvocationsOrder;
+  private List<StatesHandlers> realInvocationsOrder;
 
   //constructors_section_______________________________________________________
   /////////////////////////////////////////////////////////////////////////////
@@ -87,17 +87,17 @@ final class StateMachineStructure{
   }
 
   private void fillExpectedInvocationsOrder(){
-    expectedInvocationsOrder.add(StateHandlers.INITIALISATION_ACTIVITY);
-    expectedInvocationsOrder.add(StateHandlers.INITIALISATION_LEAVE);
-    expectedInvocationsOrder.add(StateHandlers.ACTION_1_ENTER);
-    expectedInvocationsOrder.add(StateHandlers.ACTION_1_ACTIVITY);
-    expectedInvocationsOrder.add(StateHandlers.ACTION_1_ACTIVITY);
-    expectedInvocationsOrder.add(StateHandlers.ACTION_1_LEAVE);
-    expectedInvocationsOrder.add(StateHandlers.ACTION_2_ENTER);
-    expectedInvocationsOrder.add(StateHandlers.ACTION_2_ACTIVITY);
-    expectedInvocationsOrder.add(StateHandlers.ACTION_2_LEAVE);
-    expectedInvocationsOrder.add(StateHandlers.EXIT_ENTER);
-    expectedInvocationsOrder.add(StateHandlers.EXIT_ACTIVITY);
+    expectedInvocationsOrder.add(StatesHandlers.INITIALISATION_ACTIVITY);
+    expectedInvocationsOrder.add(StatesHandlers.INITIALISATION_LEAVE);
+    expectedInvocationsOrder.add(StatesHandlers.ACTION_1_ENTER);
+    expectedInvocationsOrder.add(StatesHandlers.ACTION_1_ACTIVITY);
+    expectedInvocationsOrder.add(StatesHandlers.ACTION_1_ACTIVITY);
+    expectedInvocationsOrder.add(StatesHandlers.ACTION_1_LEAVE);
+    expectedInvocationsOrder.add(StatesHandlers.ACTION_2_ENTER);
+    expectedInvocationsOrder.add(StatesHandlers.ACTION_2_ACTIVITY);
+    expectedInvocationsOrder.add(StatesHandlers.ACTION_2_LEAVE);
+    expectedInvocationsOrder.add(StatesHandlers.EXIT_ENTER);
+    expectedInvocationsOrder.add(StatesHandlers.EXIT_ACTIVITY);
     return;
   }
 

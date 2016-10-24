@@ -9,10 +9,10 @@ import java.util.List;
 final class Action1State
 extends StateMachineState{
   private List<StateMachineState> statesRecorder;
-  private List<StateHandlers> handlersRecorder;
+  private List<StatesHandlers> handlersRecorder;
   private boolean isJustEntered;
 
-  Action1State(StateMachine machine, List<StateMachineState> statesRecorder, List<StateHandlers> handlersRecorder){
+  Action1State(StateMachine machine, List<StateMachineState> statesRecorder, List<StatesHandlers> handlersRecorder){
     super(machine);
     this.statesRecorder = statesRecorder;
     this.handlersRecorder = handlersRecorder;
@@ -23,7 +23,7 @@ extends StateMachineState{
   @Override
   protected void enter()
   throws Exception{
-    handlersRecorder.add(StateHandlers.ACTION_1_ENTER);
+    handlersRecorder.add(StatesHandlers.ACTION_1_ENTER);
     isJustEntered = true;
     return;
   }
@@ -31,7 +31,7 @@ extends StateMachineState{
   @Override
   protected void activity()
   throws Exception{
-    handlersRecorder.add(StateHandlers.ACTION_1_ACTIVITY);
+    handlersRecorder.add(StatesHandlers.ACTION_1_ACTIVITY);
     StateMachineState currentState = stateMachine.getCurrentState();
     statesRecorder.add(currentState);
 
@@ -57,7 +57,7 @@ extends StateMachineState{
   @Override
   protected void leave()
   throws Exception{
-    handlersRecorder.add(StateHandlers.ACTION_1_LEAVE);
+    handlersRecorder.add(StatesHandlers.ACTION_1_LEAVE);
     return;
   }
 }

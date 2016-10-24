@@ -9,7 +9,7 @@ import ru.sugarbaron_bicycles.library.state_machine.StateMachineState;
 import ru.sugarbaron_bicycles.library.exceptions.ProvokedForTest;
 import ru.sugarbaron_bicycles.library.exceptions.NeedFixCode;
 
-final class ExceptionStateMachineTest{
+public final class ExceptionStateMachineTest{
   @Test
   public void run()
   throws Exception{

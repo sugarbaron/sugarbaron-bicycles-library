@@ -92,8 +92,8 @@ implements Log{
     int length = name.length();
     boolean isLengthCorrect = ( (length > 0)&&(length <= MAX_FILENAME_LENGTH) );
     if(isLengthCorrect == false){
-      Dbg.out("[x][LogUnit]too big length of file name");
-      throw new NeedFixCode("[x]too big length of file name");
+      Dbg.out("[x][LogUnit]wrong length of file name");
+      throw new NeedFixCode("[x]wrong length of file name");
     }
     return;
   }

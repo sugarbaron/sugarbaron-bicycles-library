@@ -9,9 +9,9 @@ import java.util.List;
 final class ExitState
   extends StateMachineState{
   private List<StateMachineState> statesRecorder;
-  private List<StateHandlers> handlersRecorder;
+  private List<StatesHandlers> handlersRecorder;
 
-  ExitState(StateMachine machine, List<StateMachineState> statesRecorder, List<StateHandlers> handlersRecorder){
+  ExitState(StateMachine machine, List<StateMachineState> statesRecorder, List<StatesHandlers> handlersRecorder){
     super(machine);
     this.statesRecorder = statesRecorder;
     this.handlersRecorder = handlersRecorder;
@@ -21,14 +21,14 @@ final class ExitState
   @Override
   protected void enter()
   throws Exception{
-    handlersRecorder.add(StateHandlers.EXIT_ENTER);
+    handlersRecorder.add(StatesHandlers.EXIT_ENTER);
     return;
   }
 
   @Override
   protected void activity()
   throws Exception{
-    handlersRecorder.add(StateHandlers.EXIT_ACTIVITY);
+    handlersRecorder.add(StatesHandlers.EXIT_ACTIVITY);
     StateMachineState currentState = stateMachine.getCurrentState();
     statesRecorder.add(currentState);
     return;
@@ -37,7 +37,7 @@ final class ExitState
   @Override
   protected void leave()
   throws Exception{
-    handlersRecorder.add(StateHandlers.EXIT_LEAVE);
+    handlersRecorder.add(StatesHandlers.EXIT_LEAVE);
     return;
   }
 }

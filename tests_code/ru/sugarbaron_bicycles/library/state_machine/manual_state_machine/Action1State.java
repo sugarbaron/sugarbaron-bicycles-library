@@ -8,9 +8,9 @@ import ru.sugarbaron_bicycles.library.state_machine.*;
 
 final class Action1State
 extends StateMachineState{
-  private List<StateHandlers> recorder;
+  private List<StatesHandlers> recorder;
 
-  Action1State(StateMachine machine, List<StateHandlers> recorder){
+  Action1State(StateMachine machine, List<StatesHandlers> recorder){
     super(machine);
     this.recorder = recorder;
     return;
@@ -19,21 +19,21 @@ extends StateMachineState{
   @Override
   protected void enter()
   throws Exception{
-    recorder.add(StateHandlers.ACTION_1_ENTER);
+    recorder.add(StatesHandlers.ACTION_1_ENTER);
     return;
   }
 
   @Override
   protected void activity()
   throws Exception{
-    recorder.add(StateHandlers.ACTION_1_ACTIVITY);
+    recorder.add(StatesHandlers.ACTION_1_ACTIVITY);
     return;
   }
 
   @Override
   protected void leave()
   throws Exception{
-    recorder.add(StateHandlers.ACTION_1_LEAVE);
+    recorder.add(StatesHandlers.ACTION_1_LEAVE);
     return;
   }
 }

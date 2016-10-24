@@ -10,7 +10,7 @@ import ru.sugarbaron_bicycles.library.time.Clock;
 import ru.sugarbaron_bicycles.library.time.ClockUnit;
 import ru.sugarbaron_bicycles.library.exceptions.NeedFixCode;
 
-public class LogToolkitTest{
+public final class LogToolkitTest{
   @Test
   public void createAndGetLog(){
     final String LOG_FILE_NAME = "log_toolkit_test.log";

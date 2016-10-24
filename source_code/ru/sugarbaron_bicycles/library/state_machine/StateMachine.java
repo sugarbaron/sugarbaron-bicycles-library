@@ -40,10 +40,10 @@ public final class StateMachine{
    * from different threads. */
   private StateMachine(){
     allSignals = new HashMap<>();
-    nextStepSignal = null;
+    signalsQueue = new LinkedList<>();
     currentState = null;
     previousState  = null;
-    signalsQueue = new LinkedList<>();
+    nextStepSignal = null;
     queueIsUnderProcessing = false;
     return;
   }
@@ -54,7 +54,7 @@ public final class StateMachine{
    * create new signal
    * @param signalName  - member of enum, created by user.
    *                      this enum contains names of state machine signals
-   * @return new signal*/
+   * @return new signal */
   public synchronized StateMachineSignal createSignal(Enum signalName){
     StateMachineSignal newSignal = StateMachineSignal.createNew();
     allSignals.put(signalName, newSignal);
@@ -206,7 +206,22 @@ public final class StateMachine{
     if(null == requiredJump){
       return;
     }
-    makeJump(requiredJump);
+    tryJump(requiredJump);
+    return;
+  }
+
+  /** this method is for ensuring ability of working <code>makeStep()</code>
+   *  after occurring an exception inside one of state handlers
+   *  <code>enter()</code> <code>activity()</code> or <code>leave()</code> */
+  private void tryJump(Jump requiredJump)
+  throws Exception{
+    try{
+      makeJump(requiredJump);
+    }
+    catch(Exception exception){
+      queueIsUnderProcessing = false;
+      throw exception;
+    }
     return;
   }
 
@@ -216,7 +231,7 @@ public final class StateMachine{
     if(nextState != currentState){
       currentState.leave();
       previousState = currentState;
-      currentState = nextState;
+      currentState  = nextState;
       currentState.enter();
       currentState.activity();
     }

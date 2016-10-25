@@ -8,6 +8,7 @@ import ru.sugarbaron_bicycles.library.log.*;
 import ru.sugarbaron_bicycles.library.exceptions.*;
 import ru.sugarbaron_bicycles.library.random.*;
 import ru.sugarbaron_bicycles.library.synchronization.*;
+import ru.sugarbaron_bicycles.library.useful_tools.*;
 
 class z_ExternalCodeEmulator{
   public static void main(String[] unusableShit)
@@ -18,6 +19,7 @@ class z_ExternalCodeEmulator{
     useRandom();
     useExceptions();
     useSemaphore();
+    useUsefulTools();
     return;
   }
 
@@ -61,7 +63,7 @@ class z_ExternalCodeEmulator{
     return;
   }
 
-  private static void useExceptions(){
+  private static void useExceptions() throws ExecutionAborted{
     int rollResult = Random.roll(5);
     if(rollResult > 5){
       throw new NeedFixCode("example of exception using");
@@ -82,6 +84,13 @@ class z_ExternalCodeEmulator{
     Semaphore semaphore = Semaphore.createNew(0);
     semaphore.receiveSignal();
     semaphore.waitSignal();
+    return;
+  }
+
+  private static void useUsefulTools(){
+    String example = "example";
+    UsefulTools.ensureNotNull(example);
+    UsefulTools.ensureNotEmpty(example);
     return;
   }
 }

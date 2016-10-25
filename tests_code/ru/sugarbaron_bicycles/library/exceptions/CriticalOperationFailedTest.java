@@ -9,4 +9,10 @@ public final class CriticalOperationFailedTest{
   public void throwing(){
     throw new CriticalOperationFailed("testing exception throwing");
   }
+
+  @Test(expected = CriticalOperationFailed.class)
+  public void throwingBasedOnException(){
+    Exception baseException = new Exception();
+    throw new CriticalOperationFailed(baseException);
+  }
 }

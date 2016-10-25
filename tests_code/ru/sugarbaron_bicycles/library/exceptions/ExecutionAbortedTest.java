@@ -6,7 +6,7 @@ import org.junit.Test;
 
 public final class ExecutionAbortedTest{
   @Test(expected = ExecutionAborted.class)
-  public void throwing(){
+  public void throwing() throws ExecutionAborted{
     throw new ExecutionAborted("testing exception throwing");
   }
 }

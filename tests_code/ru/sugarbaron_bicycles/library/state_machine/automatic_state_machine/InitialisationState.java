@@ -43,10 +43,10 @@ final class InitialisationState
   private StateMachineSignal defineControlSignal(boolean isInitialisationOk){
     StateMachineSignal controlSignal;
     if(isInitialisationOk){
-      controlSignal = stateMachine.getSignalByName(SignalsNames.INITIALISATION_COMPLETE);
+      controlSignal = stateMachine.getSignal(SignalName.INITIALISATION_COMPLETE);
     }
     else{
-      controlSignal = stateMachine.getSignalByName(SignalsNames.INITIALISATION_FAIL);
+      controlSignal = stateMachine.getSignal(SignalName.INITIALISATION_FAIL);
     }
     return controlSignal;
   }

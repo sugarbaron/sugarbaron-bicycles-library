@@ -1,6 +1,6 @@
 /* author: sugarbaron ([sugarbaron_bicycles] e-mail:sugarbaron1@mail.ru)
    date: 24.10.2016 */
-package ru.sugarbaron_bicycles.library.state_machine.exception_state_machine;
+package ru.sugarbaron_bicycles.library.state_machine.unit_tests;
 
 import ru.sugarbaron_bicycles.library.state_machine.StateMachine;
 import ru.sugarbaron_bicycles.library.state_machine.StateMachineState;
@@ -26,8 +26,8 @@ final class StateMachineStructure{
   }
 
   private void createSignals(){
-    startSignal = stateMachine.createSignal(SignalsNames.START);
-    toState2Signal = stateMachine.createSignal(SignalsNames.TO_STATE_2);
+    startSignal = stateMachine.createSignal(SignalName.START);
+    toState2Signal = stateMachine.createSignal(SignalName.TO_STATE_2);
     return;
   }
 
@@ -47,9 +47,9 @@ final class StateMachineStructure{
 
   //methods_section____________________________________________________________
   /////////////////////////////////////////////////////////////////////////////
-  void makeStep(SignalsNames signalName)
+  void makeStep(SignalName signalName)
   throws Exception{
-    StateMachineSignal signal = stateMachine.getSignalByName(signalName);
+    StateMachineSignal signal = stateMachine.getSignal(signalName);
     stateMachine.setNextStepSignal(signal);
     stateMachine.makeStep();
     return;

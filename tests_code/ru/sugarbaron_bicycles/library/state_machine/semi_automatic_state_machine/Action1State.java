@@ -41,10 +41,10 @@ extends StateMachineState{
   private StateMachineSignal defineControlSignal(){
     StateMachineSignal controlSignal;
     if(isJustEntered){
-      controlSignal = stateMachine.getSignalByName(SignalsNames.REPEAT);
+      controlSignal = stateMachine.getSignal(SignalName.REPEAT);
     }
     else{
-      controlSignal = stateMachine.getSignalByName(SignalsNames.START_ACTION_2);
+      controlSignal = stateMachine.getSignal(SignalName.START_ACTION_2);
     }
     return controlSignal;
   }

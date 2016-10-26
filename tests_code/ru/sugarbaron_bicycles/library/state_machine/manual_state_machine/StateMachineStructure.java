@@ -54,12 +54,12 @@ final class StateMachineStructure{
   }
 
   private void createSignals(){
-    Signals.startWork = stateMachine.createSignal(SignalsNames.START_WORK);
-    Signals.initialisationFail = stateMachine.createSignal(SignalsNames.INITIALISATION_FAIL);
-    Signals.initialisationComplete = stateMachine.createSignal(SignalsNames.INITIALISATION_COMPLETE);
-    Signals.repeat = stateMachine.createSignal(SignalsNames.REPEAT);
-    Signals.startAction2 = stateMachine.createSignal(SignalsNames.START_ACTION_2);
-    Signals.endWork = stateMachine.createSignal(SignalsNames.END_WORK);
+    Signals.startWork = stateMachine.createSignal(SignalName.START_WORK);
+    Signals.initialisationFail = stateMachine.createSignal(SignalName.INITIALISATION_FAIL);
+    Signals.initialisationComplete = stateMachine.createSignal(SignalName.INITIALISATION_COMPLETE);
+    Signals.repeat = stateMachine.createSignal(SignalName.REPEAT);
+    Signals.startAction2 = stateMachine.createSignal(SignalName.START_ACTION_2);
+    Signals.endWork = stateMachine.createSignal(SignalName.END_WORK);
     return;
   }
 

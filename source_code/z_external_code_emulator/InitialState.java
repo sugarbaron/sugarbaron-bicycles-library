@@ -16,7 +16,7 @@ extends StateMachineState{
   protected void activity()
     throws Exception{
 
-    StateMachineSignal workSignal = stateMachine.getSignalByName(SignalsNames.WORK);
+    StateMachineSignal workSignal = stateMachine.getSignal(SignalsNames.WORK);
     stateMachine.setNextStepSignal(workSignal);
     return;
   }

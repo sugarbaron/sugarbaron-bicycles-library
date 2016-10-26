@@ -32,7 +32,7 @@ final class Action2State
     StateMachineState currentState = stateMachine.getCurrentState();
     statesRecorder.add(currentState);
 
-    StateMachineSignal controlSignal = stateMachine.getSignalByName(SignalsNames.END_WORK);
+    StateMachineSignal controlSignal = stateMachine.getSignal(SignalName.END_WORK);
     stateMachine.setNextStepSignal(controlSignal);
     stateMachine.makeStep();
     return;

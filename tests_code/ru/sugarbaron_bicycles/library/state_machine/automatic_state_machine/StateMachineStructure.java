@@ -3,6 +3,7 @@
 package ru.sugarbaron_bicycles.library.state_machine.automatic_state_machine;
 
 import java.util.Map;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.LinkedList;
 //[my bicycles]
@@ -20,6 +21,7 @@ final class StateMachineStructure{
   private StateMachineState action1State;
   private StateMachineState action2State;
   private StateMachineState exitState;
+  private Map<SignalName, StateMachineSignal> signals;
   private List<StateMachineState> expectedStatesOrder;
   private List<StateMachineState> realStatesOrder;
   private List<StatesHandlers> expectedInvocationsOrder;
@@ -57,20 +59,22 @@ final class StateMachineStructure{
   }
 
   private void createSignals(){
-    for(SignalsNames signalName: SignalsNames.values()){
-      stateMachine.createSignal(signalName);
+    signals = new EnumMap<>(SignalName.class);
+    StateMachineSignal signal;
+    for(SignalName name : SignalName.values() ){
+      signal = stateMachine.createSignal(name);
+      signals.put(name, signal);
     }
     return;
   }
 
   private void constructStateMachineStructure(){
-    Map<Enum, StateMachineSignal> signals = stateMachine.getSignals();
-    StateMachineSignal startWorkSignal = signals.get(SignalsNames.START_WORK);
-    StateMachineSignal initialisationFailSignal = signals.get(SignalsNames.INITIALISATION_FAIL);
-    StateMachineSignal initialisationCompleteSignal = signals.get(SignalsNames.INITIALISATION_COMPLETE);
-    StateMachineSignal startAction2Signal = signals.get(SignalsNames.START_ACTION_2);
-    StateMachineSignal repeatSignal  = signals.get(SignalsNames.REPEAT);
-    StateMachineSignal endWorkSignal = signals.get(SignalsNames.END_WORK);
+    StateMachineSignal startWorkSignal = signals.get(SignalName.START_WORK);
+    StateMachineSignal initialisationFailSignal = signals.get(SignalName.INITIALISATION_FAIL);
+    StateMachineSignal initialisationCompleteSignal = signals.get(SignalName.INITIALISATION_COMPLETE);
+    StateMachineSignal startAction2Signal = signals.get(SignalName.START_ACTION_2);
+    StateMachineSignal repeatSignal  = signals.get(SignalName.REPEAT);
+    StateMachineSignal endWorkSignal = signals.get(SignalName.END_WORK);
 
     stateMachine.setJump(initialisationState, initialisationState, startWorkSignal);
     stateMachine.setJump(initialisationState, exitState, initialisationFailSignal);
@@ -113,7 +117,7 @@ final class StateMachineStructure{
   /////////////////////////////////////////////////////////////////////////////
   void execute()
   throws Exception{
-    StateMachineSignal startSignal = stateMachine.getSignalByName(SignalsNames.START_WORK);
+    StateMachineSignal startSignal = stateMachine.getSignal(SignalName.START_WORK);
     stateMachine.setNextStepSignal(startSignal);
     stateMachine.makeStep();
 

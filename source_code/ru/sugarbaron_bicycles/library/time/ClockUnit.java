@@ -12,7 +12,7 @@ implements Clock{
   /** system time (in nanoseconds) when #this object was created */
   private long start_point = 0;
   
-  //constructors_and_factories_section_______________________________________________________
+  //constructors_and_factories_section_________________________________________
   /////////////////////////////////////////////////////////////////////////////
   public ClockUnit(){
     this.start_point = System.nanoTime();

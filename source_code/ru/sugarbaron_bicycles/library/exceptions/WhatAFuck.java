@@ -7,7 +7,7 @@ extends RuntimeException{
   private static final long serialVersionUID = 1L;
 
   public WhatAFuck(String message){
-    super(message);
+    super("{WhatAFuck}" + message);
     return;
   }
 }

@@ -10,7 +10,7 @@ extends RuntimeException{
   private static final long serialVersionUID = 1L;
   
   public NeedFixCode(String message){
-    super(message);
+    super("{NeedFixCode}" + message);
     return;
   }
 }

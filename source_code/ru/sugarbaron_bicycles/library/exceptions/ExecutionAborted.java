@@ -10,7 +10,7 @@ extends Exception{
   private static final long serialVersionUID = 1L;
   
   public ExecutionAborted(String message){
-    super(message);
+    super("{ExecutionAborted}" + message);
     return;
   }
 }

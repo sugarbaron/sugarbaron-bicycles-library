@@ -15,6 +15,10 @@ public interface Log{
   /** write warning record to log (printf-style) */
   public void warning(String text, Object... parameters);
 
+  /** write an exception to log
+   *  @param exceptionToRegister  - exception to register */
+  void exception(Exception exceptionToRegister);
+
   /** write debug record to log with definition of an invoker name, specified by
    *  <code>invocationLevel</code> parameter. takes printf-style parameters.
    *
@@ -47,6 +51,18 @@ public interface Log{
    *  @param text  - text to be written to log.  can to contain printf-style format specifiers.
    *  @param parameters  - parameters for registering in log file. */
   void warningForPreviousInvoker(int invocationLevel, String text, Object... parameters);
+
+  /** write an exception to log with definition of an invoker name, specified by
+   *  <code>invocationLevel</code> parameter.
+   *  @param invocationLevel  - level of invoker to be registered in log.
+   *    <code>invocationLevel = 0</code> - specifies a method, which invokes <code>exceptionForPreviousInvoker()</code>
+   *    <code>invocationLevel = 1</code> - specifies previous method for invoker of <code>exceptionForPreviousInvoker()</code>
+   *    etc...
+   *    incorrect value of <code>invocationLevel</code> will became a reason
+   *    of appearing "[xxxxx]xxxxx():" instead of an invoker name. no exceptions
+   *    will be thrown in this case.
+   *  @param exceptionToRegister  - exception to register */
+  void exceptionForPreviousInvoker(int invocationLevel, Exception exceptionToRegister);
 
   /** release log resources */
   public void close() throws IOException;

@@ -9,7 +9,7 @@ public final class ProvokedForTest
   extends RuntimeException{
 
   public ProvokedForTest(String message){
-    super(message);
+    super("{ProvokedForTest}" + message);
     return;
   }
 }

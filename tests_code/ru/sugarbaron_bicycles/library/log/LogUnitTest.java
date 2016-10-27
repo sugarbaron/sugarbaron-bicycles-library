@@ -12,6 +12,7 @@ import java.io.IOException;
 //[my bicycles]
 import ru.sugarbaron_bicycles.library.exceptions.NeedFixCode;
 import ru.sugarbaron_bicycles.library.exceptions.CriticalOperationFailed;
+import ru.sugarbaron_bicycles.library.exceptions.ProvokedForTest;
 import ru.sugarbaron_bicycles.library.time.Clock;
 import ru.sugarbaron_bicycles.library.time.ClockUnit;
 
@@ -53,16 +54,16 @@ public final class LogUnitTest{
   }
 
   private void thisMethodMustBeRegisteredInLog(){
-    oneMoreLevelForDebug();
+    oneMoreLevel();
     return;
   }
 
-  private void oneMoreLevelForDebug(){
-    andOneMoreLevelForDebug();
+  private void oneMoreLevel(){
+    andOneMoreLevel();
     return;
   }
 
-  private void andOneMoreLevelForDebug(){
+  private void andOneMoreLevel(){
     final String LOG_FILE_NAME = "testing_previous_invokers_registering.log";
     TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
     Log log = createLog(LOG_FILE_NAME);
@@ -70,6 +71,28 @@ public final class LogUnitTest{
     log.debugForPreviousInvoker(PREVIOUS_INVOKER, "what method do you see? must be: thisMethodMustBeRegisteredInLog()");
     log.errorForPreviousInvoker(PREVIOUS_INVOKER, "what method do you see? must be: thisMethodMustBeRegisteredInLog()");
     log.warningForPreviousInvoker(PREVIOUS_INVOKER, "what method do you see? must be: thisMethodMustBeRegisteredInLog()");
+    return;
+  }
+
+  @Test
+  public void debugForPreviousInvokerForIncorrectLevel(){
+    final String LOG_FILE_NAME = "testing_debugForPreviousInvoker_for_incorrect_level.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    final int NEXT_INVOKER_LEVEL_1 = -1;
+    final int NEXT_INVOKER_LEVEL_2 = -2;
+    final int NEXT_INVOKER_LEVEL_3 = -3;
+    final int NEXT_INVOKER_LEVEL_4 = -4;
+    final int NEXT_INVOKER_LEVEL_5 = -5;
+    final int INCORRECT_LEVEL_1 = -6;
+    final int INCORRECT_LEVEL_2 = 100;
+    log.debugForPreviousInvoker(NEXT_INVOKER_LEVEL_1, "librrary method level 1");
+    log.debugForPreviousInvoker(NEXT_INVOKER_LEVEL_2, "librrary method level 2");
+    log.debugForPreviousInvoker(NEXT_INVOKER_LEVEL_3, "librrary method level 3");
+    log.debugForPreviousInvoker(NEXT_INVOKER_LEVEL_4, "librrary method level 4");
+    log.debugForPreviousInvoker(NEXT_INVOKER_LEVEL_5, "librrary method level 5");
+    log.debugForPreviousInvoker(INCORRECT_LEVEL_1, "incorrect level of invoker (too small)");
+    log.debugForPreviousInvoker(INCORRECT_LEVEL_2, "incorrect level of invoker (too big)");
     return;
   }
 
@@ -199,6 +222,28 @@ public final class LogUnitTest{
   }
 
   @Test
+  public void errorForPreviousInvokerForIncorrectLevel(){
+    final String LOG_FILE_NAME = "testing_errorForPreviousInvoker_for_incorrect_level.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    final int NEXT_INVOKER_LEVEL_1 = -1;
+    final int NEXT_INVOKER_LEVEL_2 = -2;
+    final int NEXT_INVOKER_LEVEL_3 = -3;
+    final int NEXT_INVOKER_LEVEL_4 = -4;
+    final int NEXT_INVOKER_LEVEL_5 = -5;
+    final int INCORRECT_LEVEL_1 = -6;
+    final int INCORRECT_LEVEL_2 = 100;
+    log.errorForPreviousInvoker(NEXT_INVOKER_LEVEL_1, "librrary method level 1");
+    log.errorForPreviousInvoker(NEXT_INVOKER_LEVEL_2, "librrary method level 2");
+    log.errorForPreviousInvoker(NEXT_INVOKER_LEVEL_3, "librrary method level 3");
+    log.errorForPreviousInvoker(NEXT_INVOKER_LEVEL_4, "librrary method level 4");
+    log.errorForPreviousInvoker(NEXT_INVOKER_LEVEL_5, "librrary method level 5");
+    log.errorForPreviousInvoker(INCORRECT_LEVEL_1, "incorrect level of invoker (too small)");
+    log.errorForPreviousInvoker(INCORRECT_LEVEL_2, "incorrect level of invoker (too big)");
+    return;
+  }
+
+  @Test
   public void errorForPreviousInvokerForNullText(){
     final String LOG_FILE_NAME = "testing_errorForPreviousInvoker_for_null_text.log";
     TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
@@ -320,6 +365,28 @@ public final class LogUnitTest{
     log.error(FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
     log.error(FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
     log.error(FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    return;
+  }
+
+  @Test
+  public void warningForPreviousInvokerForIncorrectLevel(){
+    final String LOG_FILE_NAME = "testing_warningForPreviousInvoker_for_incorrect_level.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    final int NEXT_INVOKER_LEVEL_1 = -1;
+    final int NEXT_INVOKER_LEVEL_2 = -2;
+    final int NEXT_INVOKER_LEVEL_3 = -3;
+    final int NEXT_INVOKER_LEVEL_4 = -4;
+    final int NEXT_INVOKER_LEVEL_5 = -5;
+    final int INCORRECT_LEVEL_1 = -6;
+    final int INCORRECT_LEVEL_2 = 100;
+    log.warningForPreviousInvoker(NEXT_INVOKER_LEVEL_1, "librrary method level 1");
+    log.warningForPreviousInvoker(NEXT_INVOKER_LEVEL_2, "librrary method level 2");
+    log.warningForPreviousInvoker(NEXT_INVOKER_LEVEL_3, "librrary method level 3");
+    log.warningForPreviousInvoker(NEXT_INVOKER_LEVEL_4, "librrary method level 4");
+    log.warningForPreviousInvoker(NEXT_INVOKER_LEVEL_5, "librrary method level 5");
+    log.warningForPreviousInvoker(INCORRECT_LEVEL_1, "incorrect level of invoker (too small)");
+    log.warningForPreviousInvoker(INCORRECT_LEVEL_2, "incorrect level of invoker (too big)");
     return;
   }
 
@@ -446,6 +513,81 @@ public final class LogUnitTest{
     log.warning(FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
     log.warning(FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
     return;
+  }
+
+  @Test
+  public void exceptionForPreviousInvoker(){
+    thisMethodMustBeRegisteredInLogForException();
+    return;
+  }
+
+  private void thisMethodMustBeRegisteredInLogForException(){
+    oneMoreLevelForException();
+    return;
+  }
+
+  private void oneMoreLevelForException(){
+    andOneMoreLevelForException();
+    return;
+  }
+
+  private void andOneMoreLevelForException(){
+    final String DEBUG_LOG_FILE_NAME = "testing_exceptionForPreviousInvoker.log";
+    TestingLogsToolkit.deleteOldLog(DEBUG_LOG_FILE_NAME);
+    Log log = createLog(DEBUG_LOG_FILE_NAME);
+    ProvokedForTest exception = new ProvokedForTest("exception to be registered");
+    final int PREVIOUS_INVOKER_LEVEL = 2;
+    log.exceptionForPreviousInvoker(PREVIOUS_INVOKER_LEVEL, exception);
+    return;
+  }
+
+  @Test
+  public void exceptionForPreviousInvokerForNull(){
+    final String DEBUG_LOG_FILE_NAME = "testing_exceptionForPreviousInvokerForNull.log";
+    TestingLogsToolkit.deleteOldLog(DEBUG_LOG_FILE_NAME);
+    Log log = createLog(DEBUG_LOG_FILE_NAME);
+    final int THIS_METHOD_LEVEL = 0;
+    log.exceptionForPreviousInvoker(THIS_METHOD_LEVEL, null);
+  }
+
+  @Test
+  public void exceptionForPreviousInvokerForIncorrectLevel(){
+    final String LOG_FILE_NAME = "testing_exceptionForPreviousInvoker_for_incorrect_level.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    ProvokedForTest exception = new ProvokedForTest("exception to be registered");
+    final int NEXT_INVOKER_LEVEL_1 = -1;
+    final int NEXT_INVOKER_LEVEL_2 = -2;
+    final int NEXT_INVOKER_LEVEL_3 = -3;
+    final int NEXT_INVOKER_LEVEL_4 = -4;
+    final int NEXT_INVOKER_LEVEL_5 = -5;
+    final int INCORRECT_LEVEL_1 = -6;
+    final int INCORRECT_LEVEL_2 = 100;
+    log.exceptionForPreviousInvoker(NEXT_INVOKER_LEVEL_1, exception);
+    log.exceptionForPreviousInvoker(NEXT_INVOKER_LEVEL_2, exception);
+    log.exceptionForPreviousInvoker(NEXT_INVOKER_LEVEL_3, exception);
+    log.exceptionForPreviousInvoker(NEXT_INVOKER_LEVEL_4, exception);
+    log.exceptionForPreviousInvoker(NEXT_INVOKER_LEVEL_5, exception);
+    log.exceptionForPreviousInvoker(INCORRECT_LEVEL_1, exception);
+    log.exceptionForPreviousInvoker(INCORRECT_LEVEL_2, exception);
+    return;
+  }
+
+  @Test
+  public void exception(){
+    final String DEBUG_LOG_FILE_NAME = "testing_exception.log";
+    TestingLogsToolkit.deleteOldLog(DEBUG_LOG_FILE_NAME);
+    Log log = createLog(DEBUG_LOG_FILE_NAME);
+    ProvokedForTest exception = new ProvokedForTest("exception to be registered");
+    log.exception(exception);
+  }
+
+  @Test
+  public void exceptionForNull(){
+    final String DEBUG_LOG_FILE_NAME = "testing_exception_for_null.log";
+    TestingLogsToolkit.deleteOldLog(DEBUG_LOG_FILE_NAME);
+    Log log = createLog(DEBUG_LOG_FILE_NAME);
+    log.exception(null);
   }
 
   @Test

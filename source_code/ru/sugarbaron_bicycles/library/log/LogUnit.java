@@ -219,6 +219,47 @@ implements Log{
   }
 
   /**
+   * write an exception to log
+   * @param exceptionToRegister  - exception to register */
+  public synchronized void exception(Exception exceptionToRegister){
+    final int PREVIOUS_INVOKER_LEVEL = 1;
+    exceptionForPreviousInvoker(PREVIOUS_INVOKER_LEVEL, exceptionToRegister);
+    return;
+  }
+
+  /**
+   * write an exception to log with definition of an invoker name, specified by
+   * <code>invocationLevel</code> parameter.
+   * @param invocationLevel  - level of invoker to be registered in log.
+   *   <code>invocationLevel = 0</code> - specifies a method, which invokes <code>exceptionForPreviousInvoker()</code>
+   *   <code>invocationLevel = 1</code> - specifies previous method for invoker of <code>exceptionForPreviousInvoker()</code>
+   *   etc...
+   *   incorrect value of <code>invocationLevel</code> will became a reason
+   *   of appearing "[xxxxx]xxxxx():" instead of an invoker name. no exceptions
+   *   will be thrown in this case.
+   * @param exceptionToRegister  - exception to register */
+  public synchronized void exceptionForPreviousInvoker(int invocationLevel, Exception exceptionToRegister){
+    if(null == exceptionToRegister){
+      final int PREVIOUS_INVOKER_LEVEL = 0;
+      write("[exc]", PREVIOUS_INVOKER_LEVEL, "invalid argument for log.exception()");
+      return;
+    }
+    String exceptionMessage = exceptionToRegister.getMessage();
+    StackTraceElement[] stackTrace = exceptionToRegister.getStackTrace();
+    write("[exc]", invocationLevel, "exception!");
+    write("[exc]", invocationLevel, "exception message: %s", exceptionMessage);
+    write("[exc]", invocationLevel, "exception occurs at:");
+    String invokerName;
+    String invocationPlace;
+    for(StackTraceElement invoker: stackTrace){
+      invokerName = extractName(invoker);
+      invocationPlace = extractPlace(invoker);
+      write("[exc]", invocationLevel, "%s (%s) invoked from:", invokerName, invocationPlace);
+    }
+    return;
+  }
+
+  /**
    * write debug record to log with definition of an invoker name, specified by
    * <code>invocationLevel</code> parameter. takes printf-style parameters.
    *
@@ -272,7 +313,7 @@ implements Log{
     return;
   }
 
-  private synchronized void write(String marker, int invocationLevel, String text, Object... parameters){
+  private void write(String marker, int invocationLevel, String text, Object... parameters){
     long time = systemClock.getTime();
     String formattedTime = formatTime(time);
     String combination = combine(text, parameters);
@@ -359,6 +400,17 @@ implements Log{
   }
 
   private String extractName(StackTraceElement invoker){
+    String name;
+    try{
+      name = tryToExtractName(invoker);
+    }
+    catch(Exception cantExtract){
+      name = "[xxxxx]xxxxx():";
+    }
+    return name;
+  }
+
+  private String tryToExtractName(StackTraceElement invoker){
     String raw = invoker.toString();
     String[] parts = raw.split("\\.");
     int lastPartIndex = parts.length - 1;
@@ -370,6 +422,26 @@ implements Log{
     String methodName  = parts[0];
     String invokerName = "[" + className + "]" + methodName + "():";
     return invokerName;
+  }
+
+  private String extractPlace(StackTraceElement invoker){
+    String place;
+    try{
+      place = tryToExtractPlace(invoker);
+    }
+    catch(Exception cantExtract){
+      place = "xxxxx";
+    }
+    return place;
+  }
+
+  private String tryToExtractPlace(StackTraceElement invoker){
+    String raw = invoker.toString();
+    int leftBraceIndex  = raw.indexOf("(");
+    int rightBraceIndex = raw.indexOf(")");
+    int placeIndex = leftBraceIndex + 1;
+    String place = raw.substring(placeIndex, rightBraceIndex);
+    return place;
   }
 
   private void writeRecordToFile(String record){

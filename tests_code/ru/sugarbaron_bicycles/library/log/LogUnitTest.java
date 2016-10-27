@@ -47,9 +47,411 @@ public final class LogUnitTest{
   }
 
   @Test
+  public void loggingForPreviousInvoker(){
+    thisMethodMustBeRegisteredInLog();
+    return;
+  }
+
+  private void thisMethodMustBeRegisteredInLog(){
+    oneMoreLevelForDebug();
+    return;
+  }
+
+  private void oneMoreLevelForDebug(){
+    andOneMoreLevelForDebug();
+    return;
+  }
+
+  private void andOneMoreLevelForDebug(){
+    final String LOG_FILE_NAME = "testing_previous_invokers_registering.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    final int PREVIOUS_INVOKER = 2;
+    log.debugForPreviousInvoker(PREVIOUS_INVOKER, "what method do you see? must be: thisMethodMustBeRegisteredInLog()");
+    log.errorForPreviousInvoker(PREVIOUS_INVOKER, "what method do you see? must be: thisMethodMustBeRegisteredInLog()");
+    log.warningForPreviousInvoker(PREVIOUS_INVOKER, "what method do you see? must be: thisMethodMustBeRegisteredInLog()");
+    return;
+  }
+
+  @Test
+  public void debugForPreviousInvokerForNullText(){
+    final String LOG_FILE_NAME = "testing_debugForPreviousInvoker_for_null_text.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    final int THIS_METHOD_LEVEL = 0;
+    log.debugForPreviousInvoker(THIS_METHOD_LEVEL, null);
+    return;
+  }
+
+  @Test
+  public void debugForPreviousInvokerForEmptyText(){
+    final String LOG_FILE_NAME = "testing_debugForPreviousInvoker_for_empty_text.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    final int THIS_METHOD_LEVEL = 0;
+    log.debugForPreviousInvoker(THIS_METHOD_LEVEL, "");
+    return;
+  }
+
+  @Test
+  public void debugForPreviousInvokerForNullParameters(){
+    final String LOG_FILE_NAME = "testing_debugForPreviousInvoker_for_null_parameters.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    final int THIS_METHOD_LEVEL = 0;
+    log.debugForPreviousInvoker(THIS_METHOD_LEVEL, "here comes null parameters: %d %d %s", null, 7, "ace");
+    log.debugForPreviousInvoker(THIS_METHOD_LEVEL, "here comes null parameters: %d %d %s", 3, null, "ace");
+    log.debugForPreviousInvoker(THIS_METHOD_LEVEL, "here comes null parameters: %d %d %s", 3, 7, null);
+    return;
+  }
+
+  @Test
+  public void debugForPreviousInvokerForWrongParameters(){
+    final String LOG_FILE_NAME = "testing_debugForPreviousInvoker_for_wrong_parameters.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    final int THIS_METHOD_LEVEL = 0;
+    log.debugForPreviousInvoker(THIS_METHOD_LEVEL, "here comes null parameters: %d %d %s", "wrong_parameter", 7, "ace");
+  }
+
+  @Test
+  public void debugForPreviousInvokerForEmptyStringParameters(){
+    final String LOG_FILE_NAME = "testing_debugForPreviousInvoker_for_empty_string_parameters.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    final String EMPTY_STRING = "";
+    final int THIS_METHOD_LEVEL = 0;
+    log.debugForPreviousInvoker(THIS_METHOD_LEVEL, "here comes null parameters: %d %d %s", 3, 7, EMPTY_STRING);
+  }
+
+  @Test
+  public void debugForPreviousInvokerForMultipleLines(){
+    final String DEBUG_LOG_FILE_NAME = "testing_debugForPreviousInvoker_for_multiple_lines.log";
+    TestingLogsToolkit.deleteOldLog(DEBUG_LOG_FILE_NAME);
+    Log log = createLog(DEBUG_LOG_FILE_NAME);
+    final int THIS_METHOD_LEVEL = 0;
+    log.debugForPreviousInvoker(THIS_METHOD_LEVEL, FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    log.debugForPreviousInvoker(THIS_METHOD_LEVEL, FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    log.debugForPreviousInvoker(THIS_METHOD_LEVEL, FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    log.debugForPreviousInvoker(THIS_METHOD_LEVEL, FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    log.debugForPreviousInvoker(THIS_METHOD_LEVEL, FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    return;
+  }
+
+  @Test
+  public void debugForNullText(){
+    final String LOG_FILE_NAME = "testing_debug_for_null_text.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    log.debug(null);
+    return;
+  }
+
+  @Test
+  public void debugForEmptyText(){
+    final String LOG_FILE_NAME = "testing_debug_for_empty_text.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    log.debug("");
+    return;
+  }
+
+  @Test
+  public void debugForNullParameters(){
+    final String LOG_FILE_NAME = "testing_debug_for_null_parameters.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    log.debug("here comes null parameters: %d %d %s", null, 7, "ace");
+    log.debug("here comes null parameters: %d %d %s", 3, null, "ace");
+    log.debug("here comes null parameters: %d %d %s", 3, 7, null);
+    return;
+  }
+
+  @Test
+  public void debugForWrongParameters(){
+    final String LOG_FILE_NAME = "testing_debug_for_wrong_parameters.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    log.debug("here comes null parameters: %d %d %s", "wrong_parameter", 7, "ace");
+  }
+
+  @Test
+  public void debugForEmptyStringParameters(){
+    final String LOG_FILE_NAME = "testing_debug_for_empty_string_parameters.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    final String EMPTY_STRING = "";
+    log.debug("here comes null parameters: %d %d %s", 3, 7, EMPTY_STRING);
+  }
+
+  @Test
+  public void debugForMultipleLines(){
+    final String DEBUG_LOG_FILE_NAME = "testing_debug_for_multiple_lines.log";
+    TestingLogsToolkit.deleteOldLog(DEBUG_LOG_FILE_NAME);
+    Log log = createLog(DEBUG_LOG_FILE_NAME);
+
+    log.debug(FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    log.debug(FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    log.debug(FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    log.debug(FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    log.debug(FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    return;
+  }
+
+  @Test
+  public void errorForPreviousInvokerForNullText(){
+    final String LOG_FILE_NAME = "testing_errorForPreviousInvoker_for_null_text.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    final int THIS_METHOD_LEVEL = 0;
+    log.errorForPreviousInvoker(THIS_METHOD_LEVEL, null);
+    return;
+  }
+
+  @Test
+  public void errorForPreviousInvokerForEmptyText(){
+    final String LOG_FILE_NAME = "testing_errorForPreviousInvoker_for_empty_text.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    final int THIS_METHOD_LEVEL = 0;
+    log.errorForPreviousInvoker(THIS_METHOD_LEVEL, "");
+    return;
+  }
+
+  @Test
+  public void errorForPreviousInvokerForNullParameters(){
+    final String LOG_FILE_NAME = "testing_errorForPreviousInvoker_for_null_parameters.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    final int THIS_METHOD_LEVEL = 0;
+    log.errorForPreviousInvoker(THIS_METHOD_LEVEL, "here comes null parameters: %d %d %s", null, 7, "ace");
+    log.errorForPreviousInvoker(THIS_METHOD_LEVEL, "here comes null parameters: %d %d %s", 3, null, "ace");
+    log.errorForPreviousInvoker(THIS_METHOD_LEVEL, "here comes null parameters: %d %d %s", 3, 7, null);
+    return;
+  }
+
+  @Test
+  public void errorForPreviousInvokerForWrongParameters(){
+    final String LOG_FILE_NAME = "testing_errorForPreviousInvoker_for_wrong_parameters.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    final int THIS_METHOD_LEVEL = 0;
+    log.errorForPreviousInvoker(THIS_METHOD_LEVEL, "here comes null parameters: %d %d %s", "wrong_parameter", 7, "ace");
+  }
+
+  @Test
+  public void errorForPreviousInvokerForEmptyStringParameters(){
+    final String LOG_FILE_NAME = "testing_errorForPreviousInvoker_for_empty_string_parameters.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    final String EMPTY_STRING = "";
+    final int THIS_METHOD_LEVEL = 0;
+    log.errorForPreviousInvoker(THIS_METHOD_LEVEL, "here comes null parameters: %d %d %s", 3, 7, EMPTY_STRING);
+  }
+
+  @Test
+  public void errorForPreviousInvokerForMultipleLines(){
+    final String DEBUG_LOG_FILE_NAME = "testing_errorForPreviousInvoker_for_multiple_lines.log";
+    TestingLogsToolkit.deleteOldLog(DEBUG_LOG_FILE_NAME);
+    Log log = createLog(DEBUG_LOG_FILE_NAME);
+    final int THIS_METHOD_LEVEL = 0;
+    log.errorForPreviousInvoker(THIS_METHOD_LEVEL, FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    log.errorForPreviousInvoker(THIS_METHOD_LEVEL, FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    log.errorForPreviousInvoker(THIS_METHOD_LEVEL, FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    log.errorForPreviousInvoker(THIS_METHOD_LEVEL, FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    log.errorForPreviousInvoker(THIS_METHOD_LEVEL, FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    return;
+  }
+
+  @Test
+  public void errorForNullText(){
+    final String LOG_FILE_NAME = "testing_error_for_null_text.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    log.error(null);
+    return;
+  }
+
+  @Test
+  public void errorForEmptyText(){
+    final String LOG_FILE_NAME = "testing_error_for_empty_text.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    log.error("");
+    return;
+  }
+
+  @Test
+  public void errorForNullParameters(){
+    final String LOG_FILE_NAME = "testing_error_for_null_parameters.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    log.error("here comes null parameters: %d %d %s", null, 7, "ace");
+    log.error("here comes null parameters: %d %d %s", 3, null, "ace");
+    log.error("here comes null parameters: %d %d %s", 3, 7, null);
+    return;
+  }
+
+  @Test
+  public void errorForWrongParameters(){
+    final String LOG_FILE_NAME = "testing_error_for_wrong_parameters.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    log.error("here comes null parameters: %d %d %s", "wrong_parameter", 7, "ace");
+  }
+
+  @Test
+  public void errorForEmptyStringParameters(){
+    final String LOG_FILE_NAME = "testing_error_for_empty_string_parameters.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    final String EMPTY_STRING = "";
+    log.error("here comes null parameters: %d %d %s", 3, 7, EMPTY_STRING);
+  }
+
+  @Test
+  public void errorForMultipleLines(){
+    final String DEBUG_LOG_FILE_NAME = "testing_error_for_multiple_lines.log";
+    TestingLogsToolkit.deleteOldLog(DEBUG_LOG_FILE_NAME);
+    Log log = createLog(DEBUG_LOG_FILE_NAME);
+
+    log.error(FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    log.error(FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    log.error(FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    log.error(FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    log.error(FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    return;
+  }
+
+  @Test
+  public void warningForPreviousInvokerForNullText(){
+    final String LOG_FILE_NAME = "testing_warningForPreviousInvoker_for_null_text.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    final int THIS_METHOD_LEVEL = 0;
+    log.warningForPreviousInvoker(THIS_METHOD_LEVEL, null);
+    return;
+  }
+
+  @Test
+  public void warningForPreviousInvokerForEmptyText(){
+    final String LOG_FILE_NAME = "testing_warningForPreviousInvoker_for_empty_text.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    final int THIS_METHOD_LEVEL = 0;
+    log.warningForPreviousInvoker(THIS_METHOD_LEVEL, "");
+    return;
+  }
+
+  @Test
+  public void warningForPreviousInvokerForNullParameters(){
+    final String LOG_FILE_NAME = "testing_warningForPreviousInvoker_for_null_parameters.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    final int THIS_METHOD_LEVEL = 0;
+    log.warningForPreviousInvoker(THIS_METHOD_LEVEL, "here comes null parameters: %d %d %s", null, 7, "ace");
+    log.warningForPreviousInvoker(THIS_METHOD_LEVEL, "here comes null parameters: %d %d %s", 3, null, "ace");
+    log.warningForPreviousInvoker(THIS_METHOD_LEVEL, "here comes null parameters: %d %d %s", 3, 7, null);
+    return;
+  }
+
+  @Test
+  public void warningForPreviousInvokerForWrongParameters(){
+    final String LOG_FILE_NAME = "testing_warningForPreviousInvoker_for_wrong_parameters.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    final int THIS_METHOD_LEVEL = 0;
+    log.warningForPreviousInvoker(THIS_METHOD_LEVEL, "here comes null parameters: %d %d %s", "wrong_parameter", 7, "ace");
+  }
+
+  @Test
+  public void warningForPreviousInvokerForEmptyStringParameters(){
+    final String LOG_FILE_NAME = "testing_warningForPreviousInvoker_for_empty_string_parameters.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    final String EMPTY_STRING = "";
+    final int THIS_METHOD_LEVEL = 0;
+    log.warningForPreviousInvoker(THIS_METHOD_LEVEL, "here comes null parameters: %d %d %s", 3, 7, EMPTY_STRING);
+  }
+
+  @Test
+  public void warningForPreviousInvokerForMultipleLines(){
+    final String DEBUG_LOG_FILE_NAME = "testing_warningForPreviousInvoker_for_multiple_lines.log";
+    TestingLogsToolkit.deleteOldLog(DEBUG_LOG_FILE_NAME);
+    Log log = createLog(DEBUG_LOG_FILE_NAME);
+    final int THIS_METHOD_LEVEL = 0;
+    log.warningForPreviousInvoker(THIS_METHOD_LEVEL, FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    log.warningForPreviousInvoker(THIS_METHOD_LEVEL, FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    log.warningForPreviousInvoker(THIS_METHOD_LEVEL, FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    log.warningForPreviousInvoker(THIS_METHOD_LEVEL, FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    log.warningForPreviousInvoker(THIS_METHOD_LEVEL, FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    return;
+  }
+
+  @Test
+  public void warningForNullText(){
+    final String LOG_FILE_NAME = "testing_warning_for_null_text.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    log.warning(null);
+    return;
+  }
+
+  @Test
+  public void warningForEmptyText(){
+    final String LOG_FILE_NAME = "testing_warning_for_empty_text.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    log.warning("");
+    return;
+  }
+
+  @Test
+  public void warningForNullParameters(){
+    final String LOG_FILE_NAME = "testing_warning_for_null_parameters.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    log.warning("here comes null parameters: %d %d %s", null, 7, "ace");
+    log.warning("here comes null parameters: %d %d %s", 3, null, "ace");
+    log.warning("here comes null parameters: %d %d %s", 3, 7, null);
+    return;
+  }
+
+  @Test
+  public void warningForWrongParameters(){
+    final String LOG_FILE_NAME = "testing_warning_for_wrong_parameters.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    log.warning("here comes null parameters: %d %d %s", "wrong_parameter", 7, "ace");
+  }
+
+  @Test
+  public void warningForEmptyStringParameters(){
+    final String LOG_FILE_NAME = "testing_warning_for_empty_string_parameters.log";
+    TestingLogsToolkit.deleteOldLog(LOG_FILE_NAME);
+    Log log = createLog(LOG_FILE_NAME);
+    final String EMPTY_STRING = "";
+    log.warning("here comes null parameters: %d %d %s", 3, 7, EMPTY_STRING);
+  }
+
+  @Test
+  public void warningForMultipleLines(){
+    final String DEBUG_LOG_FILE_NAME = "testing_warning_for_multiple_lines.log";
+    TestingLogsToolkit.deleteOldLog(DEBUG_LOG_FILE_NAME);
+    Log log = createLog(DEBUG_LOG_FILE_NAME);
+
+    log.warning(FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    log.warning(FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    log.warning(FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    log.warning(FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    log.warning(FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
+    return;
+  }
+
+  @Test
   public void debug()
   throws Exception{
-    final String DEBUG_LOG_FILE_NAME = "test_debug_record_log.txt";
+    final String DEBUG_LOG_FILE_NAME = "testing_debug.log";
     TestingLogsToolkit.deleteOldLog(DEBUG_LOG_FILE_NAME);
     Log log = createLog(DEBUG_LOG_FILE_NAME);
 
@@ -67,7 +469,7 @@ public final class LogUnitTest{
   @Test
   public void error()
     throws Exception{
-    final String ERROR_LOG_FILE_NAME = "test_error_record_log.txt";
+    final String ERROR_LOG_FILE_NAME = "testing_error.log";
     TestingLogsToolkit.deleteOldLog(ERROR_LOG_FILE_NAME);
     Log log = createLog(ERROR_LOG_FILE_NAME);
 
@@ -85,7 +487,7 @@ public final class LogUnitTest{
   @Test
   public void warning()
     throws Exception{
-    final String WARNING_LOG_FILE_NAME = "test_warning_record_log.txt";
+    final String WARNING_LOG_FILE_NAME = "testing_warning.log";
     TestingLogsToolkit.deleteOldLog(WARNING_LOG_FILE_NAME);
     Log log = createLog(WARNING_LOG_FILE_NAME);
 

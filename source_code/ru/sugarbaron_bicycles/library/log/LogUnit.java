@@ -274,34 +274,53 @@ implements Log{
 
   private synchronized void write(String marker, int invocationLevel, String text, Object... parameters){
     long time = systemClock.getTime();
-
-    if(text == null){
-      //[invalid argument]
-      return;
-    }
-
-    String invokerName = getInvokerName(invocationLevel);
-    text = marker + invokerName + text;
-
-    //[constructing record (step 1):combining text and parameters]
-    String record;
-    recordConstructor.format(text, parameters);
-    record = recordConstructorResult.toString();
-    makeEmpty(recordConstructorResult);
-
-    //[constructing record (step 2):prepending time]
-    recordConstructor.format("[%010d]%s \n", time, record);
-    record = recordConstructorResult.toString();
-    makeEmpty(recordConstructorResult);
-
+    String formattedTime = formatTime(time);
+    String combination = combine(text, parameters);
+    String invokerName = defineInvokerName(invocationLevel);
+    String record = formattedTime + marker + invokerName + combination + " \n";
     writeRecordToFile(record);
     return;
   }
 
-  private String getInvokerName(int specifiedByUserLevel){
+  private String formatTime(long time){
+    recordConstructor.format("[%010d]", time);
+    String formattedTime = recordConstructorResult.toString();
+    makeEmpty(recordConstructorResult);
+    return formattedTime;
+  }
+
+  private String combine(String text, Object... parameters){
+    String combination;
+    try{
+      combination = tryToCombine(text, parameters);
+    }
+    catch(Exception combiningFailed){
+      combination = "cant combine text with parameters. text is null, or wrong parameters format";
+    }
+    makeEmpty(recordConstructorResult);
+    return combination;
+  }
+
+  private String tryToCombine(String text, Object... parameters){
+    if(text == null){
+      throw new NeedFixCode("text is null");
+    }
+    recordConstructor.format(text, parameters);
+    String combination = recordConstructorResult.toString();
+    return combination;
+  }
+
+  private void makeEmpty(StringBuffer buffer){
+    final int BEGIN_INDEX = 0;
+    final int END_INDEX = buffer.length();
+    buffer.delete(BEGIN_INDEX, END_INDEX);
+    return;
+  }
+
+  private String defineInvokerName(int specifiedByUserLevel){
     String invokerName;
     try{
-      invokerName = defineInvokerName(specifiedByUserLevel);
+      invokerName = tryToDefineInvokerName(specifiedByUserLevel);
     }
     catch(Exception nameIsNotDefined){
       invokerName = "[xxxxx]xxxxx():";
@@ -309,11 +328,11 @@ implements Log{
     return invokerName;
   }
 
-  private String defineInvokerName(int specifiedByUserLevel)
+  private String tryToDefineInvokerName(int specifiedByUserLevel)
   throws ExecutionAborted{
     //[level == 0  - is a level (in stack trace) of method getStackTrace() in class Thread, so,
     // level == 1  - is a level of this method
-    // level == 2  - is a level of getInvokerName() method
+    // level == 2  - is a level of defineInvokerName() method
     // level == 3  - is a level of write() method
     // level == 4  - is a level for library interface methods
     //               ( they are: debugForPreviousInvoker(), errorForPreviousInvoker(), warningForPreviousInvoker() )]
@@ -351,13 +370,6 @@ implements Log{
     String methodName  = parts[0];
     String invokerName = "[" + className + "]" + methodName + "():";
     return invokerName;
-  }
-
-  private void makeEmpty(StringBuffer buffer){
-    final int BEGIN_INDEX = 0;
-    final int END_INDEX = buffer.length();
-    buffer.delete(BEGIN_INDEX, END_INDEX);
-    return;
   }
 
   private void writeRecordToFile(String record){

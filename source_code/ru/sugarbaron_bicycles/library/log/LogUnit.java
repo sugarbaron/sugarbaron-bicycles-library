@@ -183,77 +183,160 @@ implements Log{
   //methods_section__________________________________________________
   ///////////////////////////////////////////////////////////////////
   /**
-   * writing debug record to log. takes printf-style parameters.
+   * write debug record to log. takes printf-style parameters.
    * 
    * @param text          string for writing to log. can to contain
    *                      printf-style format specifiers.
    * @param parameters    parameters for registering in log file. */
   public synchronized void debug(String text, Object... parameters){
-    final int LEVEL_IS_NOT_SPECIFIED = 0;
-    String invokersName = getInvokersName(LEVEL_IS_NOT_SPECIFIED);
-    text = "[dbg]" + invokersName + text;
-    write(text, parameters);
+    final int PREVIOUS_INVOKER_LEVEL = 1;
+    debugForPreviousInvoker(PREVIOUS_INVOKER_LEVEL, text, parameters);
     return;
   }
 
   /**
-   * writing error record to log. takes printf-style parameters.
+   * write record about an error to log. takes printf-style parameters.
    *
    * @param text          string for writing to log. can to contain
    *                      printf-style format specifiers.
    * @param parameters    parameters for registering in log file. */
   public synchronized void error(String text, Object... parameters){
-    final int LEVEL_IS_NOT_SPECIFIED = 0;
-    String invokersName = getInvokersName(LEVEL_IS_NOT_SPECIFIED);
-    text = "[err]" + invokersName + text;
-    write(text, parameters);
+    final int PREVIOUS_INVOKER_LEVEL = 1;
+    errorForPreviousInvoker(PREVIOUS_INVOKER_LEVEL, text, parameters);
     return;
   }
 
   /**
-   * writing warning record to log. takes printf-style parameters.
+   * write warning record to log. takes printf-style parameters.
    *
    * @param text          string for writing to log. can to contain
    *                      printf-style format specifiers.
    * @param parameters    parameters for registering in log file. */
   public synchronized void warning(String text, Object... parameters){
-    final int LEVEL_IS_NOT_SPECIFIED = 0;
-    String invokersName = getInvokersName(LEVEL_IS_NOT_SPECIFIED);
-    text = "[wrn]" + invokersName + text;
-    write(text, parameters);
+    final int PREVIOUS_INVOKER_LEVEL = 1;
+    warningForPreviousInvoker(PREVIOUS_INVOKER_LEVEL, text, parameters);
     return;
   }
 
-  private String getInvokersName(int specifiedByUserLevel){
-    String invokersName;
-    try{
-      invokersName = defineInvokersName(specifiedByUserLevel);
-    }
-    catch(ExecutionAborted nameIsNotDefined){
-      invokersName = "[xxxxx]xxxxx():";
-    }
-    return invokersName;
+  /**
+   * write debug record to log with definition of an invoker name, specified by
+   * <code>invocationLevel</code> parameter. takes printf-style parameters.
+   *
+   * @param invocationLevel  - level of invoker to be registered in log.
+   *   <code>invocationLevel = 0</code> - specifies a method, which invokes <code>debugForPreviousInvoker()</code>
+   *   <code>invocationLevel = 1</code> - specifies previous method for invoker of <code>debugForPreviousInvoker()</code>
+   *   etc...
+   *   incorrect value of <code>invocationLevel</code> will became a reason
+   *   of appearing "[xxxxx]xxxxx():" instead of an invoker name. no exceptions
+   *   will be thrown in this case.
+   * @param text  - text to be written to log.  can to contain printf-style format specifiers.
+   * @param parameters  - parameters for registering in log file. */
+  public synchronized void debugForPreviousInvoker(int invocationLevel, String text, Object... parameters){
+    write("[dbg]", invocationLevel, text, parameters);
+    return;
   }
 
-  private String defineInvokersName(int specifiedByUserLevel)
+  /**
+   * write record about an error to log with definition of an invoker name, specified by
+   * <code>invocationLevel</code> parameter. takes printf-style parameters.
+   *
+   * @param invocationLevel  - level of invoker to be registered in log.
+   *   <code>invocationLevel = 0</code> - specifies a method, which invokes <code>errorForPreviousInvoker()</code>
+   *   <code>invocationLevel = 1</code> - specifies previous method for invoker of <code>errorForPreviousInvoker()</code>
+   *   etc...
+   *   incorrect value of <code>invocationLevel</code> will became a reason
+   *   of appearing "[xxxxx]xxxxx():" instead of an invoker name. no exceptions
+   *   will be thrown in this case.
+   * @param text  - text to be written to log.  can to contain printf-style format specifiers.
+   * @param parameters  - parameters for registering in log file. */
+  public synchronized void errorForPreviousInvoker(int invocationLevel, String text, Object... parameters){
+    write("[err]", invocationLevel, text, parameters);
+    return;
+  }
+
+  /**
+   * write warning record to log with definition of an invoker name, specified by
+   * <code>invocationLevel</code> parameter. takes printf-style parameters.
+   *
+   * @param invocationLevel  - level of invoker to be registered in log.
+   *   <code>invocationLevel = 0</code> - specifies a method, which invokes <code>warningForPreviousInvoker()</code>
+   *   <code>invocationLevel = 1</code> - specifies previous method for invoker of <code>warningForPreviousInvoker()</code>
+   *   etc...
+   *   incorrect value of <code>invocationLevel</code> will became a reason
+   *   of appearing "[xxxxx]xxxxx():" instead of an invoker name. no exceptions
+   *   will be thrown in this case.
+   * @param text  - text to be written to log.  can to contain printf-style format specifiers.
+   * @param parameters  - parameters for registering in log file. */
+  public synchronized void warningForPreviousInvoker(int invocationLevel, String text, Object... parameters){
+    write("[wrn]", invocationLevel, text, parameters);
+    return;
+  }
+
+  private synchronized void write(String marker, int invocationLevel, String text, Object... parameters){
+    long time = systemClock.getTime();
+
+    if(text == null){
+      //[invalid argument]
+      return;
+    }
+
+    String invokerName = getInvokerName(invocationLevel);
+    text = marker + invokerName + text;
+
+    //[constructing record (step 1):combining text and parameters]
+    String record;
+    recordConstructor.format(text, parameters);
+    record = recordConstructorResult.toString();
+    makeEmpty(recordConstructorResult);
+
+    //[constructing record (step 2):prepending time]
+    recordConstructor.format("[%010d]%s \n", time, record);
+    record = recordConstructorResult.toString();
+    makeEmpty(recordConstructorResult);
+
+    writeRecordToFile(record);
+    return;
+  }
+
+  private String getInvokerName(int specifiedByUserLevel){
+    String invokerName;
+    try{
+      invokerName = defineInvokerName(specifiedByUserLevel);
+    }
+    catch(Exception nameIsNotDefined){
+      invokerName = "[xxxxx]xxxxx():";
+    }
+    return invokerName;
+  }
+
+  private String defineInvokerName(int specifiedByUserLevel)
   throws ExecutionAborted{
     //[level == 0  - is a level (in stack trace) of method getStackTrace() in class Thread, so,
-    // level == 1  - is a level of this method.
-    // level == 3  - is a level for library interface methods ( they are: debug(), error(), warning() )]
-    final int LIBRARY_INTERFACE_LEVEL = 3;
+    // level == 1  - is a level of this method
+    // level == 2  - is a level of getInvokerName() method
+    // level == 3  - is a level of write() method
+    // level == 4  - is a level for library interface methods
+    //               ( they are: debugForPreviousInvoker(), errorForPreviousInvoker(), warningForPreviousInvoker() )]
+    final int LIBRARY_INTERFACE_LEVEL = 4;
     //[invocation level (in stack trace) for method in users code, which invokes library methods]
     final int USERS_INVOKER_LEVEL = LIBRARY_INTERFACE_LEVEL + 1;
     int requiredLevel = USERS_INVOKER_LEVEL + specifiedByUserLevel;
 
     StackTraceElement[] invokers = Thread.currentThread().getStackTrace();
     int lastIndex = invokers.length - 1;
-    boolean isOutOfBounds = (requiredLevel > lastIndex);
-    if(isOutOfBounds){
-      throw new ExecutionAborted("wrong value of #requiredInvokersLevel");
-    }
+    ensureInsideOfBounds(requiredLevel, lastIndex);
     StackTraceElement invoker = invokers[requiredLevel];
-    String invokersName = extractName(invoker);
-    return invokersName;
+    String invokerName = extractName(invoker);
+    return invokerName;
+  }
+
+  private void ensureInsideOfBounds(int valueToCheck, int bounds)
+  throws ExecutionAborted{
+    boolean isOutOfBounds = (valueToCheck > bounds);
+    if(isOutOfBounds){
+      throw new ExecutionAborted("wrong value of #requiredLevel");
+    }
+    return;
   }
 
   private String extractName(StackTraceElement invoker){
@@ -268,29 +351,6 @@ implements Log{
     String methodName  = parts[0];
     String invokerName = "[" + className + "]" + methodName + "():";
     return invokerName;
-  }
-
-  private synchronized void write(String text, Object... parameters){
-    long time = systemClock.getTime();
-    
-    //[checking arguments correctness]
-    if(text == null){
-      return;
-    }
-    
-    //[constructing record (step 1):combining text and parameters]
-    String record;
-    recordConstructor.format(text, parameters);
-    record = recordConstructorResult.toString();
-    makeEmpty(recordConstructorResult);
-
-    //[constructing record (step 2):prepending time]
-    recordConstructor.format("[%010d]%s \n", time, record);
-    record = recordConstructorResult.toString();
-    makeEmpty(recordConstructorResult);
-
-    writeRecordToFile(record);
-    return;
   }
 
   private void makeEmpty(StringBuffer buffer){

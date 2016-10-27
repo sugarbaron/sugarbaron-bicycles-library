@@ -3,11 +3,15 @@
 package ru.sugarbaron_bicycles.library.log;
 
 //[standard libraries]
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Formatter;
 //[my bicycles]
-import ru.sugarbaron_bicycles.library.exceptions.*;
-import ru.sugarbaron_bicycles.library.time.*;
+import ru.sugarbaron_bicycles.library.exceptions.NeedFixCode;
+import ru.sugarbaron_bicycles.library.exceptions.ExecutionAborted;
+import ru.sugarbaron_bicycles.library.exceptions.CriticalOperationFailed;
+import ru.sugarbaron_bicycles.library.time.Clock;
 
 
 /**
@@ -185,7 +189,9 @@ implements Log{
    *                      printf-style format specifiers.
    * @param parameters    parameters for registering in log file. */
   public synchronized void debug(String text, Object... parameters){
-    text = "[dbg]" + text;
+    final int LEVEL_IS_NOT_SPECIFIED = 0;
+    String invokersName = getInvokersName(LEVEL_IS_NOT_SPECIFIED);
+    text = "[dbg]" + invokersName + text;
     write(text, parameters);
     return;
   }
@@ -197,7 +203,9 @@ implements Log{
    *                      printf-style format specifiers.
    * @param parameters    parameters for registering in log file. */
   public synchronized void error(String text, Object... parameters){
-    text = "[err]" + text;
+    final int LEVEL_IS_NOT_SPECIFIED = 0;
+    String invokersName = getInvokersName(LEVEL_IS_NOT_SPECIFIED);
+    text = "[err]" + invokersName + text;
     write(text, parameters);
     return;
   }
@@ -209,9 +217,57 @@ implements Log{
    *                      printf-style format specifiers.
    * @param parameters    parameters for registering in log file. */
   public synchronized void warning(String text, Object... parameters){
-    text = "[wrn]" + text;
+    final int LEVEL_IS_NOT_SPECIFIED = 0;
+    String invokersName = getInvokersName(LEVEL_IS_NOT_SPECIFIED);
+    text = "[wrn]" + invokersName + text;
     write(text, parameters);
     return;
+  }
+
+  private String getInvokersName(int specifiedByUserLevel){
+    String invokersName;
+    try{
+      invokersName = defineInvokersName(specifiedByUserLevel);
+    }
+    catch(ExecutionAborted nameIsNotDefined){
+      invokersName = "[xxxxx]xxxxx():";
+    }
+    return invokersName;
+  }
+
+  private String defineInvokersName(int specifiedByUserLevel)
+  throws ExecutionAborted{
+    //[level == 0  - is a level (in stack trace) of method getStackTrace() in class Thread, so,
+    // level == 1  - is a level of this method.
+    // level == 3  - is a level for library interface methods ( they are: debug(), error(), warning() )]
+    final int LIBRARY_INTERFACE_LEVEL = 3;
+    //[invocation level (in stack trace) for method in users code, which invokes library methods]
+    final int USERS_INVOKER_LEVEL = LIBRARY_INTERFACE_LEVEL + 1;
+    int requiredLevel = USERS_INVOKER_LEVEL + specifiedByUserLevel;
+
+    StackTraceElement[] invokers = Thread.currentThread().getStackTrace();
+    int lastIndex = invokers.length - 1;
+    boolean isOutOfBounds = (requiredLevel > lastIndex);
+    if(isOutOfBounds){
+      throw new ExecutionAborted("wrong value of #requiredInvokersLevel");
+    }
+    StackTraceElement invoker = invokers[requiredLevel];
+    String invokersName = extractName(invoker);
+    return invokersName;
+  }
+
+  private String extractName(StackTraceElement invoker){
+    String raw = invoker.toString();
+    String[] parts = raw.split("\\.");
+    int lastPartIndex = parts.length - 1;
+    int methodPartIndex = lastPartIndex - 1;
+    int classPartIndex  = methodPartIndex - 1;
+    String methodPart = parts[methodPartIndex];
+    String className  = parts[classPartIndex];
+    parts = methodPart.split("\\(");
+    String methodName  = parts[0];
+    String invokerName = "[" + className + "]" + methodName + "():";
+    return invokerName;
   }
 
   private synchronized void write(String text, Object... parameters){

@@ -32,10 +32,9 @@ public final class LogUnitTest{
   private final int HEXADECIMAL = 0xFA;
   private final String HEXADECIMAL_AS_TEXT = "0xFA";
   private final String DIAGNOSTICS = "some diagnostics";
-  private final String EXPECTED_RECORD_BODY = DIAGNOSTICS + " " + DECIMAL_AS_TEXT + " " + STRING + " " + HEXADECIMAL_AS_TEXT;
-  private final int EXPECTED_RECORD_BODY_LENGTH = EXPECTED_RECORD_BODY.length();
   private final String FORMATTED_TEXT = DIAGNOSTICS + " %d %s 0x%X";
-  private final int EXPECTED_RECORD_LENGTH = RECORD_TIME_LENGTH + RECORD_MARKER_LENGTH + EXPECTED_RECORD_BODY_LENGTH + RECORD_TAIL_LENGTH;
+  private final String EXPECTED_RECORD_BODY = DIAGNOSTICS + " " + DECIMAL_AS_TEXT + " " + STRING + " " + HEXADECIMAL_AS_TEXT;
+  private final int RECORD_BODY_LENGTH = EXPECTED_RECORD_BODY.length();
 
   private Clock clock;
 
@@ -57,6 +56,7 @@ public final class LogUnitTest{
     log.debug(FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
 
     String logRecord = readLog(DEBUG_LOG_FILE_NAME);
+    checkDebugRecordLength(logRecord);
     checkDebugMarker(logRecord);
     checkDiagnostics(logRecord);
 
@@ -74,6 +74,7 @@ public final class LogUnitTest{
     log.error(FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
 
     String logRecord = readLog(ERROR_LOG_FILE_NAME);
+    checkErrorRecordLength(logRecord);
     checkErrorMarker(logRecord);
     checkDiagnostics(logRecord);
 
@@ -91,6 +92,7 @@ public final class LogUnitTest{
     log.warning(FORMATTED_TEXT, DECIMAL, STRING, HEXADECIMAL);
 
     String logRecord = readLog(WARNING_LOG_FILE_NAME);
+    checkWarningRecordLength(logRecord);
     checkWarningMarker(logRecord);
     checkDiagnostics(logRecord);
 
@@ -123,28 +125,66 @@ public final class LogUnitTest{
     // it allows to check the case, when real record is bigger than expected.
     // that's why i use <code>ADDITIONAL_CHARS_QUANTITY</code>]
     final int ADDITIONAL_CHARS_QUANTITY = 1;
-    final int BUFFER_SIZE = EXPECTED_RECORD_LENGTH + ADDITIONAL_CHARS_QUANTITY;
+    //[invoker has such format: [<className>]<methodName>():
+    // <className> for our case is #LogUnitTest
+    // <methodName> for our case can be #debug, #error or #warning.
+    // so invoker will be not bigger, than: [LogUnitTest]warning():]
+    final int RECORD_INVOKER_LENGTH = 23;
+    final int BUFFER_SIZE = RECORD_TIME_LENGTH
+                          + RECORD_MARKER_LENGTH
+                          + RECORD_BODY_LENGTH
+                          + RECORD_TAIL_LENGTH
+                          + RECORD_INVOKER_LENGTH
+                          + ADDITIONAL_CHARS_QUANTITY;
     char[] logAsCharSequence = new char[BUFFER_SIZE];
 
-    int realLogSize = logReader.read(logAsCharSequence);
-
-    checkRecordSize(realLogSize);
+    int logSize = logReader.read(logAsCharSequence);
 
     final int BEGIN_INDEX = 0;
-    String logAsText = String.valueOf(logAsCharSequence, BEGIN_INDEX, realLogSize);
+    String logAsText = String.valueOf(logAsCharSequence, BEGIN_INDEX, logSize);
     return logAsText;
   }
 
-  private void checkRecordSize(int valueToCheck){
-    boolean areEqual = (valueToCheck == EXPECTED_RECORD_LENGTH);
-    assertTrue("incorrect log size", areEqual);
+  private void checkDebugRecordLength(String record){
+    int actualLength = record.length();
+    int expectedLength = RECORD_TIME_LENGTH
+      + RECORD_MARKER_LENGTH
+      + "[LogUnitTest]debug():".length()
+      + RECORD_BODY_LENGTH
+      + RECORD_TAIL_LENGTH;
+    boolean isCorrectLength = (actualLength == expectedLength);
+    assertTrue(isCorrectLength);
+    return;
+  }
+
+  private void checkErrorRecordLength(String record){
+    int actualLength = record.length();
+    int expectedLength = RECORD_TIME_LENGTH
+      + RECORD_MARKER_LENGTH
+      + "[LogUnitTest]error():".length()
+      + RECORD_BODY_LENGTH
+      + RECORD_TAIL_LENGTH;
+    boolean isCorrectLength = (actualLength == expectedLength);
+    assertTrue(isCorrectLength);
+    return;
+  }
+
+  private void checkWarningRecordLength(String record){
+    int actualLength = record.length();
+    int expectedLength = RECORD_TIME_LENGTH
+      + RECORD_MARKER_LENGTH
+      + "[LogUnitTest]warning():".length()
+      + RECORD_BODY_LENGTH
+      + RECORD_TAIL_LENGTH;
+    boolean isCorrectLength = (actualLength == expectedLength);
+    assertTrue(isCorrectLength);
     return;
   }
 
   private void checkDebugMarker(String record){
     int MARKER_BEGIN_INDEX = RECORD_TIME_LENGTH;
     int MARKER_END_INDEX = MARKER_BEGIN_INDEX + RECORD_MARKER_LENGTH;
-    String recordMarker  = record.substring(MARKER_BEGIN_INDEX, MARKER_END_INDEX);
+    String  recordMarker = record.substring(MARKER_BEGIN_INDEX, MARKER_END_INDEX);
     boolean isMarkerCorrect = recordMarker.equals("[dbg]");
     assertTrue("debug marker is incorrect", isMarkerCorrect);
     return;
@@ -153,7 +193,7 @@ public final class LogUnitTest{
   private void checkErrorMarker(String record){
     int MARKER_BEGIN_INDEX = RECORD_TIME_LENGTH;
     int MARKER_END_INDEX = MARKER_BEGIN_INDEX + RECORD_MARKER_LENGTH;
-    String recordMarker  = record.substring(MARKER_BEGIN_INDEX, MARKER_END_INDEX);
+    String  recordMarker = record.substring(MARKER_BEGIN_INDEX, MARKER_END_INDEX);
     boolean isMarkerCorrect = recordMarker.equals("[err]");
     assertTrue("error marker is incorrect", isMarkerCorrect);
     return;
@@ -162,17 +202,17 @@ public final class LogUnitTest{
   private void checkWarningMarker(String record){
     int MARKER_BEGIN_INDEX = RECORD_TIME_LENGTH;
     int MARKER_END_INDEX = MARKER_BEGIN_INDEX + RECORD_MARKER_LENGTH;
-    String recordMarker  = record.substring(MARKER_BEGIN_INDEX, MARKER_END_INDEX);
+    String  recordMarker = record.substring(MARKER_BEGIN_INDEX, MARKER_END_INDEX);
     boolean isMarkerCorrect = recordMarker.equals("[wrn]");
     assertTrue("error marker is incorrect", isMarkerCorrect);
     return;
   }
 
   private void checkDiagnostics(String record){
-    final int RECORD_BODY_BEGIN_INDEX = RECORD_TIME_FORMAT.length() + RECORD_MARKER_FORMAT.length();
+    String  expectedDiagnostics  = EXPECTED_RECORD_BODY + RECORD_TAIL_FORMAT;
+    final int RECORD_BODY_BEGIN_INDEX = record.length() - expectedDiagnostics.length() - 1;//[-1 because excluding carriage return (CR) character];
     final int RECORD_BODY_END_INDEX = record.length() - 1;//[-1 because excluding carriage return (CR) character]
-    String logDiagnostics = record.substring(RECORD_BODY_BEGIN_INDEX, RECORD_BODY_END_INDEX);
-    String expectedDiagnostics = EXPECTED_RECORD_BODY + RECORD_TAIL_FORMAT;
+    String  logDiagnostics = record.substring(RECORD_BODY_BEGIN_INDEX, RECORD_BODY_END_INDEX);
     boolean isDiagnosticsCorrect = logDiagnostics.equals(expectedDiagnostics);
     assertTrue("diagnostics is incorrect", isDiagnosticsCorrect);
     return;

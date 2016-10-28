@@ -9,7 +9,7 @@ public final class UsefulToolsTest{
   @Test
   public void ensureNotNull(){
     String notNull = "not_null";
-    UsefulTools.ensureNotNull(notNull);
+    UsefulTools.requireNotNull(notNull);
     return;
   }
 
@@ -20,21 +20,21 @@ public final class UsefulToolsTest{
   }
 
   private void deceiveIntelliJ(String alwaysNull){
-    UsefulTools.ensureNotNull(alwaysNull);
+    UsefulTools.requireNotNull(alwaysNull);
     return;
   }
 
   @Test
   public void ensureNotEmpty(){
     String notEmpty = "not_empty";
-    UsefulTools.ensureNotEmpty(notEmpty);
+    UsefulTools.requireNotEmpty(notEmpty);
     return;
   }
 
   @Test(expected = NeedFixCode.class)
   public void ensureNotEmptyForEmpty(){
     String empty = "";
-    UsefulTools.ensureNotEmpty(empty);
+    UsefulTools.requireNotEmpty(empty);
     return;
   }
 }

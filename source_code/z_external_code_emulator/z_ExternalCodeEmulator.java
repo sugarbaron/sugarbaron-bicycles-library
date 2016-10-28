@@ -89,8 +89,8 @@ class z_ExternalCodeEmulator{
 
   private static void useUsefulTools(){
     String example = "example";
-    UsefulTools.ensureNotNull(example);
-    UsefulTools.ensureNotEmpty(example);
+    UsefulTools.requireNotNull(example);
+    UsefulTools.requireNotEmpty(example);
     return;
   }
 }

@@ -57,14 +57,14 @@ public final class StateMachine{
    *                      this enum contains names of state machine signals
    * @return new signal */
   public synchronized StateMachineSignal createSignal(Enum signalName){
-    UsefulTools.ensureNotNull(signalName);
-    ensureSignalIsNotExist(signalName);
+    UsefulTools.requireNotNull(signalName);
+    requireSignalIsNotExist(signalName);
     StateMachineSignal newSignal = StateMachineSignal.createNew();
     allSignals.put(signalName, newSignal);
     return newSignal;
   }
 
-  private void ensureSignalIsNotExist(Enum signalName){
+  private void requireSignalIsNotExist(Enum signalName){
     StateMachineSignal requiredSignal = getSignal(signalName);
     if(null != requiredSignal){
       throw new NeedFixCode("such signal is already exist");
@@ -78,7 +78,7 @@ public final class StateMachine{
    *                      this enum contains names of state machine signals
    * @return signal for specified name */
   public synchronized StateMachineSignal getSignal(Enum signalName){
-    UsefulTools.ensureNotNull(signalName);
+    UsefulTools.requireNotNull(signalName);
     StateMachineSignal requiredSignal = allSignals.get(signalName);
     return requiredSignal;
   }
@@ -109,9 +109,9 @@ public final class StateMachine{
    * @throws NeedFixCode  in case, when was detected wrong work of a program
    *                      because of errors in code */
   public synchronized void setJump(StateMachineState from, StateMachineState to, StateMachineSignal signal){
-    UsefulTools.ensureNotNull(from);
-    UsefulTools.ensureNotNull(to);
-    UsefulTools.ensureNotNull(signal);
+    UsefulTools.requireNotNull(from);
+    UsefulTools.requireNotNull(to);
+    UsefulTools.requireNotNull(signal);
     from.addJump(to, signal);
     return;
   }
@@ -124,13 +124,13 @@ public final class StateMachine{
    * @throws NeedFixCode  in case, when was detected wrong work of a program
    *                      because of errors in code */
   public synchronized void setStart(StateMachineState start){
-    UsefulTools.ensureNotNull(start);
-    ensureStartIsNotSet();
+    UsefulTools.requireNotNull(start);
+    requireStateMachineNotStarted();
     currentState = start;
     return;
   }
 
-  private void ensureStartIsNotSet(){
+  private void requireStateMachineNotStarted(){
     if(currentState != null){
       throw new NeedFixCode("trying to set initial state for already working state machine");
     }
@@ -145,7 +145,7 @@ public final class StateMachine{
    * this method must be invoked for every <code>makeStep()</code>
    * @param signal  - signal for making next state machine step */
   public synchronized void setNextStepSignal(StateMachineSignal signal){
-    UsefulTools.ensureNotNull(signal);
+    UsefulTools.requireNotNull(signal);
     nextStepSignal = signal;
     return;
   }
@@ -163,7 +163,7 @@ public final class StateMachine{
    * @throws Exception  - in case, when state handler throws any exceptions */
   public synchronized void makeStep()
   throws Exception{
-    UsefulTools.ensureNotNull(nextStepSignal);
+    UsefulTools.requireNotNull(nextStepSignal);
     takeSignalForProcessing(nextStepSignal);
     resetNextStepSignal();
     processSignalsQueue();
@@ -196,22 +196,22 @@ public final class StateMachine{
 
   private void processSignal(StateMachineSignal signal)
   throws Exception{
-    UsefulTools.ensureNotNull(currentState);
+    UsefulTools.requireNotNull(currentState);
     Jump requiredJump = currentState.getJumpForSignal(signal);
     if(null == requiredJump){
       return;
     }
-    tryJump(requiredJump);
+    makeJump(requiredJump);
     return;
   }
 
   /** this method is for ensuring ability of working <code>makeStep()</code>
    *  after occurring an exception inside one of state handlers
    *  <code>enter()</code>, <code>activity()</code> or <code>leave()</code> */
-  private void tryJump(Jump requiredJump)
+  private void makeJump(Jump requiredJump)
   throws Exception{
     try{
-      makeJump(requiredJump);
+      tryJump(requiredJump);
     }
     catch(Exception exception){
       queueIsUnderProcessing = false;
@@ -220,7 +220,7 @@ public final class StateMachine{
     return;
   }
 
-  private void makeJump(Jump jump)
+  private void tryJump(Jump jump)
   throws Exception{
     StateMachineState nextState = jump.to;
     if(nextState != currentState){

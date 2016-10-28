@@ -7,7 +7,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.HashMap;
 //[my bicycles]
-import ru.sugarbaron_bicycles.library.exceptions.*;
+import ru.sugarbaron_bicycles.library.exceptions.NeedFixCode;
+import ru.sugarbaron_bicycles.library.useful_tools.UsefulTools;
 
 /**
  * provides graph (actually, state machine)
@@ -40,10 +41,10 @@ public final class StateMachine{
    * from different threads. */
   private StateMachine(){
     allSignals = new HashMap<>();
-    nextStepSignal = null;
+    signalsQueue = new LinkedList<>();
     currentState = null;
     previousState  = null;
-    signalsQueue = new LinkedList<>();
+    nextStepSignal = null;
     queueIsUnderProcessing = false;
     return;
   }
@@ -54,11 +55,21 @@ public final class StateMachine{
    * create new signal
    * @param signalName  - member of enum, created by user.
    *                      this enum contains names of state machine signals
-   * @return new signal*/
+   * @return new signal */
   public synchronized StateMachineSignal createSignal(Enum signalName){
+    UsefulTools.requireNotNull(signalName);
+    requireSignalIsNotExist(signalName);
     StateMachineSignal newSignal = StateMachineSignal.createNew();
     allSignals.put(signalName, newSignal);
     return newSignal;
+  }
+
+  private void requireSignalIsNotExist(Enum signalName){
+    StateMachineSignal requiredSignal = getSignal(signalName);
+    if(null != requiredSignal){
+      throw new NeedFixCode("such signal is already exist");
+    }
+    return;
   }
 
   /**
@@ -66,18 +77,10 @@ public final class StateMachine{
    * @param signalName  - member of enum, created by user.
    *                      this enum contains names of state machine signals
    * @return signal for specified name */
-  public synchronized StateMachineSignal getSignalByName(Enum signalName){
+  public synchronized StateMachineSignal getSignal(Enum signalName){
+    UsefulTools.requireNotNull(signalName);
     StateMachineSignal requiredSignal = allSignals.get(signalName);
     return requiredSignal;
-  }
-
-  /**
-   * get collection of all state machine signals.
-   * key for each signal in this collection is it's signal name.
-   * this signal name is a member of enum with signal names, created by user
-   * @return collection of all state machine signals */
-  public synchronized Map<Enum, StateMachineSignal> getSignals(){
-    return allSignals;
   }
 
   /**
@@ -106,12 +109,9 @@ public final class StateMachine{
    * @throws NeedFixCode  in case, when was detected wrong work of a program
    *                      because of errors in code */
   public synchronized void setJump(StateMachineState from, StateMachineState to, StateMachineSignal signal){
-    //[checking arguments validation]
-    if( (null == from)
-      ||(null == to)
-      ||(null == signal) ){
-      throw new NeedFixCode("invalid arguments");
-    }
+    UsefulTools.requireNotNull(from);
+    UsefulTools.requireNotNull(to);
+    UsefulTools.requireNotNull(signal);
     from.addJump(to, signal);
     return;
   }
@@ -124,16 +124,16 @@ public final class StateMachine{
    * @throws NeedFixCode  in case, when was detected wrong work of a program
    *                      because of errors in code */
   public synchronized void setStart(StateMachineState start){
-    //[checking argument validation]
-    if(null == start){
-      throw new NeedFixCode("argument is null");
-    }
+    UsefulTools.requireNotNull(start);
+    requireStateMachineNotStarted();
+    currentState = start;
+    return;
+  }
 
+  private void requireStateMachineNotStarted(){
     if(currentState != null){
       throw new NeedFixCode("trying to set initial state for already working state machine");
     }
-
-    currentState = start;
     return;
   }
 
@@ -145,6 +145,7 @@ public final class StateMachine{
    * this method must be invoked for every <code>makeStep()</code>
    * @param signal  - signal for making next state machine step */
   public synchronized void setNextStepSignal(StateMachineSignal signal){
+    UsefulTools.requireNotNull(signal);
     nextStepSignal = signal;
     return;
   }
@@ -162,17 +163,10 @@ public final class StateMachine{
    * @throws Exception  - in case, when state handler throws any exceptions */
   public synchronized void makeStep()
   throws Exception{
-    checkSignal(nextStepSignal);
+    UsefulTools.requireNotNull(nextStepSignal);
     takeSignalForProcessing(nextStepSignal);
     resetNextStepSignal();
     processSignalsQueue();
-    return;
-  }
-
-  private void checkSignal(StateMachineSignal signal){
-    if(null == signal){
-      throw new NeedFixCode("signal in null");
-    }
     return;
   }
 
@@ -202,6 +196,7 @@ public final class StateMachine{
 
   private void processSignal(StateMachineSignal signal)
   throws Exception{
+    UsefulTools.requireNotNull(currentState);
     Jump requiredJump = currentState.getJumpForSignal(signal);
     if(null == requiredJump){
       return;
@@ -210,13 +205,28 @@ public final class StateMachine{
     return;
   }
 
-  private void makeJump(Jump jump)
+  /** this method is for ensuring ability of working <code>makeStep()</code>
+   *  after occurring an exception inside one of state handlers
+   *  <code>enter()</code>, <code>activity()</code> or <code>leave()</code> */
+  private void makeJump(Jump requiredJump)
+  throws Exception{
+    try{
+      tryJump(requiredJump);
+    }
+    catch(Exception exception){
+      queueIsUnderProcessing = false;
+      throw exception;
+    }
+    return;
+  }
+
+  private void tryJump(Jump jump)
   throws Exception{
     StateMachineState nextState = jump.to;
     if(nextState != currentState){
       currentState.leave();
       previousState = currentState;
-      currentState = nextState;
+      currentState  = nextState;
       currentState.enter();
       currentState.activity();
     }

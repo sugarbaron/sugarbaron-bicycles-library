@@ -2,17 +2,12 @@ package ru.sugarbaron_bicycles.library.time;
 
 import static org.junit.Assert.*;
 
-public class ClockUnitTest {
-  private Clock clock;
+import org.junit.Test;
 
-  /* @Before */
-  public void setUp() {
-    clock = new ClockUnit();
-    return;
-  }
-
-  /* @Test */
-  public void testGetTime() {
+public final class ClockUnitTest {
+  @Test
+  public void testGetTime(){
+    Clock clock = new ClockUnit();
     long timeValue = clock.getTime();
     //weak test
     assertFalse(timeValue < 0);

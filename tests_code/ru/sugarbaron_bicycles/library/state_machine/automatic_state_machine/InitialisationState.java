@@ -9,9 +9,9 @@ import java.util.List;
 final class InitialisationState
   extends StateMachineState{
   private List<StateMachineState> statesRecorder;
-  private List<StateHandlers> handlersRecorder;
+  private List<StatesHandlers> handlersRecorder;
 
-  InitialisationState(StateMachine machine, List<StateMachineState> statesRecorder, List<StateHandlers> handlersRecorder){
+  InitialisationState(StateMachine machine, List<StateMachineState> statesRecorder, List<StatesHandlers> handlersRecorder){
     super(machine);
     this.statesRecorder = statesRecorder;
     this.handlersRecorder = handlersRecorder;
@@ -21,14 +21,14 @@ final class InitialisationState
   @Override
   protected void enter()
   throws Exception{
-    handlersRecorder.add(StateHandlers.INITIALISATION_ENTER);
+    handlersRecorder.add(StatesHandlers.INITIALISATION_ENTER);
     return;
   }
 
   @Override
   protected void activity()
   throws Exception{
-    handlersRecorder.add(StateHandlers.INITIALISATION_ACTIVITY);
+    handlersRecorder.add(StatesHandlers.INITIALISATION_ACTIVITY);
     StateMachineState currentState = stateMachine.getCurrentState();
     statesRecorder.add(currentState);
 
@@ -43,10 +43,10 @@ final class InitialisationState
   private StateMachineSignal defineControlSignal(boolean isInitialisationOk){
     StateMachineSignal controlSignal;
     if(isInitialisationOk){
-      controlSignal = stateMachine.getSignalByName(SignalsNames.INITIALISATION_COMPLETE);
+      controlSignal = stateMachine.getSignal(SignalName.INITIALISATION_COMPLETE);
     }
     else{
-      controlSignal = stateMachine.getSignalByName(SignalsNames.INITIALISATION_FAIL);
+      controlSignal = stateMachine.getSignal(SignalName.INITIALISATION_FAIL);
     }
     return controlSignal;
   }
@@ -59,7 +59,7 @@ final class InitialisationState
   @Override
   protected void leave()
   throws Exception{
-    handlersRecorder.add(StateHandlers.INITIALISATION_LEAVE);
+    handlersRecorder.add(StatesHandlers.INITIALISATION_LEAVE);
     return;
   }
 }

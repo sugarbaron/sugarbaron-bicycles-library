@@ -2,10 +2,11 @@
    date: 18.09.2016 */
 package ru.sugarbaron_bicycles.library.synchronization;
 
+import org.junit.Test;
 import java.util.List;
 import java.util.ArrayList;
 
-public class SemaphoreTest{
+public final class SemaphoreTest{
   //data_section_______________________________________________________________
   /////////////////////////////////////////////////////////////////////////////
   private Producer producer;
@@ -33,6 +34,7 @@ public class SemaphoreTest{
 
   //methods_section____________________________________________________________
   /////////////////////////////////////////////////////////////////////////////
+  @Test
   public void run(){
     startAllConsumers();
     startProducer();

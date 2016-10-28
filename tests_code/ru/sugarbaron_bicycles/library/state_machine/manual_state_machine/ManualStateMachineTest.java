@@ -2,10 +2,11 @@
    date: 03.09.2016 */
 package ru.sugarbaron_bicycles.library.state_machine.manual_state_machine;
 
+import org.junit.Test;
 import java.util.List;
 import java.util.LinkedList;
 //[my bicycles]
-import ru.sugarbaron_bicycles.library.state_machine.*;
+import ru.sugarbaron_bicycles.library.state_machine.StateMachineSignal;
 
 public final class ManualStateMachineTest{
   //data_section_______________________________________________________________
@@ -34,6 +35,7 @@ public final class ManualStateMachineTest{
 
   //methods_section____________________________________________________________
   /////////////////////////////////////////////////////////////////////////////
+  @Test
   public void run()
   throws Exception{
     executeStateMachine();

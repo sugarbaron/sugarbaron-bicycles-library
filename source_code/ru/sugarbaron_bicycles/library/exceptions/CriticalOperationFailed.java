@@ -11,7 +11,7 @@ package ru.sugarbaron_bicycles.library.exceptions;
    private static final long serialVersionUID = 1L;
    
    public CriticalOperationFailed(String message){
-     super(message);
+     super("{CriticalOperationFailed} " + message);
      return;
    }
    

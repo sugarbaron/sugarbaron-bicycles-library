@@ -1,8 +1,8 @@
 /* author: sugarbaron ([sugarbaron_bicycles] e-mail:sugarbaron1@mail.ru)
    date: 31.08.2016 */
-package ru.sugarbaron_bicycles.library.state_machine;
+package ru.sugarbaron_bicycles.library.state_machine.semi_automatic_state_machine;
 
-public enum StateHandlers{
+enum StatesHandlers{
   INITIALISATION_ENTER,
   INITIALISATION_ACTIVITY,
   INITIALISATION_LEAVE,

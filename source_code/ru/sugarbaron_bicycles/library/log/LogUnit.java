@@ -3,11 +3,15 @@
 package ru.sugarbaron_bicycles.library.log;
 
 //[standard libraries]
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Formatter;
 //[my bicycles]
-import ru.sugarbaron_bicycles.library.exceptions.*;
-import ru.sugarbaron_bicycles.library.time.*;
+import ru.sugarbaron_bicycles.library.exceptions.NeedFixCode;
+import ru.sugarbaron_bicycles.library.exceptions.ExecutionAborted;
+import ru.sugarbaron_bicycles.library.exceptions.CriticalOperationFailed;
+import ru.sugarbaron_bicycles.library.time.Clock;
 
 
 /**
@@ -92,8 +96,8 @@ implements Log{
     int length = name.length();
     boolean isLengthCorrect = ( (length > 0)&&(length <= MAX_FILENAME_LENGTH) );
     if(isLengthCorrect == false){
-      Dbg.out("[x][LogUnit]too big length of file name");
-      throw new NeedFixCode("[x]too big length of file name");
+      Dbg.out("[x][LogUnit]wrong length of file name");
+      throw new NeedFixCode("[x]wrong length of file name");
     }
     return;
   }
@@ -179,62 +183,172 @@ implements Log{
   //methods_section__________________________________________________
   ///////////////////////////////////////////////////////////////////
   /**
-   * writing debug record to log. takes printf-style parameters.
+   * write debug record to log. takes printf-style parameters.
    * 
    * @param text          string for writing to log. can to contain
    *                      printf-style format specifiers.
    * @param parameters    parameters for registering in log file. */
   public synchronized void debug(String text, Object... parameters){
-    text = "[dbg]" + text;
-    write(text, parameters);
+    final int PREVIOUS_INVOKER_LEVEL = 1;
+    debugForPreviousInvoker(PREVIOUS_INVOKER_LEVEL, text, parameters);
     return;
   }
 
   /**
-   * writing error record to log. takes printf-style parameters.
+   * write record about an error to log. takes printf-style parameters.
    *
    * @param text          string for writing to log. can to contain
    *                      printf-style format specifiers.
    * @param parameters    parameters for registering in log file. */
   public synchronized void error(String text, Object... parameters){
-    text = "[err]" + text;
-    write(text, parameters);
+    final int PREVIOUS_INVOKER_LEVEL = 1;
+    errorForPreviousInvoker(PREVIOUS_INVOKER_LEVEL, text, parameters);
     return;
   }
 
   /**
-   * writing warning record to log. takes printf-style parameters.
+   * write warning record to log. takes printf-style parameters.
    *
    * @param text          string for writing to log. can to contain
    *                      printf-style format specifiers.
    * @param parameters    parameters for registering in log file. */
   public synchronized void warning(String text, Object... parameters){
-    text = "[wrn]" + text;
-    write(text, parameters);
+    final int PREVIOUS_INVOKER_LEVEL = 1;
+    warningForPreviousInvoker(PREVIOUS_INVOKER_LEVEL, text, parameters);
     return;
   }
 
-  private synchronized void write(String text, Object... parameters){
-    long time = systemClock.getTime();
-    
-    //[checking arguments correctness]
-    if(text == null){
+  /**
+   * write an exception to log
+   * @param exceptionToRegister  - exception to register */
+  public synchronized void exception(Exception exceptionToRegister){
+    final int PREVIOUS_INVOKER_LEVEL = 1;
+    exceptionForPreviousInvoker(PREVIOUS_INVOKER_LEVEL, exceptionToRegister);
+    return;
+  }
+
+  /**
+   * write an exception to log with definition of an invoker name, specified by
+   * <code>invocationLevel</code> parameter.
+   * @param invocationLevel  - level of invoker to be registered in log.
+   *   <code>invocationLevel = 0</code> - specifies a method, which invokes <code>exceptionForPreviousInvoker()</code>
+   *   <code>invocationLevel = 1</code> - specifies previous method for invoker of <code>exceptionForPreviousInvoker()</code>
+   *   etc...
+   *   incorrect value of <code>invocationLevel</code> will became a reason
+   *   of appearing "[xxxxx]xxxxx():" instead of an invoker name. no exceptions
+   *   will be thrown in this case.
+   * @param exceptionToRegister  - exception to register */
+  public synchronized void exceptionForPreviousInvoker(int invocationLevel, Exception exceptionToRegister){
+    if(null == exceptionToRegister){
+      final int PREVIOUS_INVOKER_LEVEL = 0;
+      write("[exc]", PREVIOUS_INVOKER_LEVEL, "invalid argument for log.exception()");
       return;
     }
-    
-    //[constructing record (step 1):combining text and parameters]
-    String record;
-    recordConstructor.format(text, parameters);
-    record = recordConstructorResult.toString();
-    makeEmpty(recordConstructorResult);
+    String exceptionMessage = exceptionToRegister.getMessage();
+    StackTraceElement[] stackTrace = exceptionToRegister.getStackTrace();
+    write("[exc]", invocationLevel, "exception!");
+    write("[exc]", invocationLevel, "exception message: %s", exceptionMessage);
+    write("[exc]", invocationLevel, "exception occurs at:");
+    String invokerName;
+    String invocationPlace;
+    for(StackTraceElement invoker: stackTrace){
+      invokerName = extractName(invoker);
+      invocationPlace = extractPlace(invoker);
+      write("[exc]", invocationLevel, "%s (%s) invoked from:", invokerName, invocationPlace);
+    }
+    return;
+  }
 
-    //[constructing record (step 2):prepending time]
-    recordConstructor.format("[%010d]%s \n", time, record);
-    record = recordConstructorResult.toString();
-    makeEmpty(recordConstructorResult);
+  /**
+   * write debug record to log with definition of an invoker name, specified by
+   * <code>invocationLevel</code> parameter. takes printf-style parameters.
+   *
+   * @param invocationLevel  - level of invoker to be registered in log.
+   *   <code>invocationLevel = 0</code> - specifies a method, which invokes <code>debugForPreviousInvoker()</code>
+   *   <code>invocationLevel = 1</code> - specifies previous method for invoker of <code>debugForPreviousInvoker()</code>
+   *   etc...
+   *   incorrect value of <code>invocationLevel</code> will became a reason
+   *   of appearing "[xxxxx]xxxxx():" instead of an invoker name. no exceptions
+   *   will be thrown in this case.
+   * @param text  - text to be written to log.  can to contain printf-style format specifiers.
+   * @param parameters  - parameters for registering in log file. */
+  public synchronized void debugForPreviousInvoker(int invocationLevel, String text, Object... parameters){
+    write("[dbg]", invocationLevel, text, parameters);
+    return;
+  }
 
+  /**
+   * write record about an error to log with definition of an invoker name, specified by
+   * <code>invocationLevel</code> parameter. takes printf-style parameters.
+   *
+   * @param invocationLevel  - level of invoker to be registered in log.
+   *   <code>invocationLevel = 0</code> - specifies a method, which invokes <code>errorForPreviousInvoker()</code>
+   *   <code>invocationLevel = 1</code> - specifies previous method for invoker of <code>errorForPreviousInvoker()</code>
+   *   etc...
+   *   incorrect value of <code>invocationLevel</code> will became a reason
+   *   of appearing "[xxxxx]xxxxx():" instead of an invoker name. no exceptions
+   *   will be thrown in this case.
+   * @param text  - text to be written to log.  can to contain printf-style format specifiers.
+   * @param parameters  - parameters for registering in log file. */
+  public synchronized void errorForPreviousInvoker(int invocationLevel, String text, Object... parameters){
+    write("[err]", invocationLevel, text, parameters);
+    return;
+  }
+
+  /**
+   * write warning record to log with definition of an invoker name, specified by
+   * <code>invocationLevel</code> parameter. takes printf-style parameters.
+   *
+   * @param invocationLevel  - level of invoker to be registered in log.
+   *   <code>invocationLevel = 0</code> - specifies a method, which invokes <code>warningForPreviousInvoker()</code>
+   *   <code>invocationLevel = 1</code> - specifies previous method for invoker of <code>warningForPreviousInvoker()</code>
+   *   etc...
+   *   incorrect value of <code>invocationLevel</code> will became a reason
+   *   of appearing "[xxxxx]xxxxx():" instead of an invoker name. no exceptions
+   *   will be thrown in this case.
+   * @param text  - text to be written to log.  can to contain printf-style format specifiers.
+   * @param parameters  - parameters for registering in log file. */
+  public synchronized void warningForPreviousInvoker(int invocationLevel, String text, Object... parameters){
+    write("[wrn]", invocationLevel, text, parameters);
+    return;
+  }
+
+  private void write(String marker, int invocationLevel, String text, Object... parameters){
+    long time = systemClock.getTime();
+    String formattedTime = formatTime(time);
+    String combination = combine(text, parameters);
+    String invokerName = defineInvokerName(invocationLevel);
+    String record = formattedTime + marker + invokerName + combination + " \n";
     writeRecordToFile(record);
     return;
+  }
+
+  private String formatTime(long time){
+    recordConstructor.format("[%010d]", time);
+    String formattedTime = recordConstructorResult.toString();
+    makeEmpty(recordConstructorResult);
+    return formattedTime;
+  }
+
+  private String combine(String text, Object... parameters){
+    String combination;
+    try{
+      combination = tryToCombine(text, parameters);
+    }
+    catch(Exception combiningFailed){
+      combination = "cant combine text with parameters. text is null, or wrong parameters format";
+    }
+    makeEmpty(recordConstructorResult);
+    return combination;
+  }
+
+  private String tryToCombine(String text, Object... parameters){
+    if(text == null){
+      throw new NeedFixCode("text is null");
+    }
+    recordConstructor.format(text, parameters);
+    String combination = recordConstructorResult.toString();
+    return combination;
   }
 
   private void makeEmpty(StringBuffer buffer){
@@ -242,6 +356,92 @@ implements Log{
     final int END_INDEX = buffer.length();
     buffer.delete(BEGIN_INDEX, END_INDEX);
     return;
+  }
+
+  private String defineInvokerName(int specifiedByUserLevel){
+    String invokerName;
+    try{
+      invokerName = tryToDefineInvokerName(specifiedByUserLevel);
+    }
+    catch(Exception nameIsNotDefined){
+      invokerName = "[xxxxx]xxxxx():";
+    }
+    return invokerName;
+  }
+
+  private String tryToDefineInvokerName(int specifiedByUserLevel)
+  throws ExecutionAborted{
+    //[level == 0  - is a level (in stack trace) of method getStackTrace() in class Thread, so,
+    // level == 1  - is a level of this method
+    // level == 2  - is a level of defineInvokerName() method
+    // level == 3  - is a level of write() method
+    // level == 4  - is a level for library interface methods
+    //               ( they are: debugForPreviousInvoker(), errorForPreviousInvoker(), warningForPreviousInvoker() )]
+    final int LIBRARY_INTERFACE_LEVEL = 4;
+    //[invocation level (in stack trace) for method in users code, which invokes library methods]
+    final int USERS_INVOKER_LEVEL = LIBRARY_INTERFACE_LEVEL + 1;
+    int requiredLevel = USERS_INVOKER_LEVEL + specifiedByUserLevel;
+
+    StackTraceElement[] invokers = Thread.currentThread().getStackTrace();
+    int lastIndex = invokers.length - 1;
+    requireInsideOfBounds(requiredLevel, lastIndex);
+    StackTraceElement invoker = invokers[requiredLevel];
+    String invokerName = extractName(invoker);
+    return invokerName;
+  }
+
+  private void requireInsideOfBounds(int valueToCheck, int bounds)
+  throws ExecutionAborted{
+    boolean isOutOfBounds = (valueToCheck > bounds);
+    if(isOutOfBounds){
+      throw new ExecutionAborted("wrong value of #requiredLevel");
+    }
+    return;
+  }
+
+  private String extractName(StackTraceElement invoker){
+    String name;
+    try{
+      name = tryToExtractName(invoker);
+    }
+    catch(Exception cantExtract){
+      name = "[xxxxx]xxxxx():";
+    }
+    return name;
+  }
+
+  private String tryToExtractName(StackTraceElement invoker){
+    String raw = invoker.toString();
+    String[] parts = raw.split("\\.");
+    int lastPartIndex = parts.length - 1;
+    int methodPartIndex = lastPartIndex - 1;
+    int classPartIndex  = methodPartIndex - 1;
+    String methodPart = parts[methodPartIndex];
+    String className  = parts[classPartIndex];
+    parts = methodPart.split("\\(");
+    String methodName  = parts[0];
+    String invokerName = "[" + className + "]" + methodName + "():";
+    return invokerName;
+  }
+
+  private String extractPlace(StackTraceElement invoker){
+    String place;
+    try{
+      place = tryToExtractPlace(invoker);
+    }
+    catch(Exception cantExtract){
+      place = "xxxxx";
+    }
+    return place;
+  }
+
+  private String tryToExtractPlace(StackTraceElement invoker){
+    String raw = invoker.toString();
+    int leftBraceIndex  = raw.indexOf("(");
+    int rightBraceIndex = raw.indexOf(")");
+    int placeIndex = leftBraceIndex + 1;
+    String place = raw.substring(placeIndex, rightBraceIndex);
+    return place;
   }
 
   private void writeRecordToFile(String record){

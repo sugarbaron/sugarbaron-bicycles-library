@@ -2,10 +2,13 @@
    date: 14.09.2016 */
 package ru.sugarbaron_bicycles.library.random;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
 
 public class RandomTest{
-  public void testRoll(){
+  @Test
+  public void roll(){
     final int ITERATIONS_QUANTITY = 100000;
     final int VARIANTS_QUANTITY = 5;
     final int MAX_VALUE = VARIANTS_QUANTITY - 1;

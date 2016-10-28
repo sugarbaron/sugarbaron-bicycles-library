@@ -42,9 +42,9 @@ final class Machine{
   }
 
   private void constructMachineStructure(StateMachine stateMachine){
-    StateMachineSignal startSignal = stateMachine.getSignalByName(SignalsNames.START);
-    StateMachineSignal workSignal  = stateMachine.getSignalByName(SignalsNames.WORK);
-    StateMachineSignal endSignal = stateMachine.getSignalByName(SignalsNames.END);
+    StateMachineSignal startSignal = stateMachine.getSignal(SignalsNames.START);
+    StateMachineSignal workSignal  = stateMachine.getSignal(SignalsNames.WORK);
+    StateMachineSignal endSignal = stateMachine.getSignal(SignalsNames.END);
 
     stateMachine.setJump(initialState, initialState, startSignal);
     stateMachine.setJump(initialState, workState, workSignal);

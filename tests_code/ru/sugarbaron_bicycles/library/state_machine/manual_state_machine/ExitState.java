@@ -8,9 +8,9 @@ import ru.sugarbaron_bicycles.library.state_machine.*;
 
 final class ExitState
   extends StateMachineState{
-  private List<StateHandlers> recorder;
+  private List<StatesHandlers> recorder;
 
-  ExitState(StateMachine machine, List<StateHandlers> recorder){
+  ExitState(StateMachine machine, List<StatesHandlers> recorder){
     super(machine);
     this.recorder = recorder;
     return;
@@ -19,21 +19,21 @@ final class ExitState
   @Override
   protected void enter()
   throws Exception{
-    recorder.add(StateHandlers.EXIT_ENTER);
+    recorder.add(StatesHandlers.EXIT_ENTER);
     return;
   }
 
   @Override
   protected void activity()
   throws Exception{
-    recorder.add(StateHandlers.EXIT_ACTIVITY);
+    recorder.add(StatesHandlers.EXIT_ACTIVITY);
     return;
   }
 
   @Override
   protected void leave()
   throws Exception{
-    recorder.add(StateHandlers.EXIT_LEAVE);
+    recorder.add(StatesHandlers.EXIT_LEAVE);
     return;
   }
 }

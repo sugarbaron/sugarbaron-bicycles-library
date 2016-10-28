@@ -21,7 +21,7 @@ extends StateMachineState{
   @Override
   protected void activity()
     throws Exception{
-    StateMachineSignal finishSignal = stateMachine.getSignalByName(SignalsNames.END);
+    StateMachineSignal finishSignal = stateMachine.getSignal(SignalsNames.END);
     stateMachine.setNextStepSignal(finishSignal);
     return;
   }

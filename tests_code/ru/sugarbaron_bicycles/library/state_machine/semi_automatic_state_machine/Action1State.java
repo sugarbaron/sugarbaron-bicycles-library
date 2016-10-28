@@ -8,10 +8,10 @@ import java.util.List;
 
 final class Action1State
 extends StateMachineState{
-  private List<StateHandlers> handlersRecorder;
+  private List<StatesHandlers> handlersRecorder;
   private boolean isJustEntered;
 
-  Action1State(StateMachine machine, List<StateHandlers> handlersRecorder){
+  Action1State(StateMachine machine, List<StatesHandlers> handlersRecorder){
     super(machine);
     this.handlersRecorder = handlersRecorder;
     this.isJustEntered = true;
@@ -21,7 +21,7 @@ extends StateMachineState{
   @Override
   protected void enter()
   throws Exception{
-    handlersRecorder.add(StateHandlers.ACTION_1_ENTER);
+    handlersRecorder.add(StatesHandlers.ACTION_1_ENTER);
     isJustEntered = true;
     return;
   }
@@ -29,7 +29,7 @@ extends StateMachineState{
   @Override
   protected void activity()
   throws Exception{
-    handlersRecorder.add(StateHandlers.ACTION_1_ACTIVITY);
+    handlersRecorder.add(StatesHandlers.ACTION_1_ACTIVITY);
 
     StateMachineSignal controlSignal = defineControlSignal();
     isJustEntered = false;
@@ -41,10 +41,10 @@ extends StateMachineState{
   private StateMachineSignal defineControlSignal(){
     StateMachineSignal controlSignal;
     if(isJustEntered){
-      controlSignal = stateMachine.getSignalByName(SignalsNames.REPEAT);
+      controlSignal = stateMachine.getSignal(SignalName.REPEAT);
     }
     else{
-      controlSignal = stateMachine.getSignalByName(SignalsNames.START_ACTION_2);
+      controlSignal = stateMachine.getSignal(SignalName.START_ACTION_2);
     }
     return controlSignal;
   }
@@ -52,7 +52,7 @@ extends StateMachineState{
   @Override
   protected void leave()
   throws Exception{
-    handlersRecorder.add(StateHandlers.ACTION_1_LEAVE);
+    handlersRecorder.add(StatesHandlers.ACTION_1_LEAVE);
     return;
   }
 }

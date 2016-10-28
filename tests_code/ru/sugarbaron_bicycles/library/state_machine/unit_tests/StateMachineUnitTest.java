@@ -214,6 +214,15 @@ public final class StateMachineUnitTest{
   }
 
   @Test(expected = NeedFixCode.class)
+  public void setStartForAlreadyStartedStateMachine(){
+    StateMachine stateMachine = StateMachine.createNew();
+    StateMachineState state1 = new State1(stateMachine);
+    stateMachine.setStart(state1);
+    stateMachine.setStart(state1);
+    return;
+  }
+
+  @Test(expected = NeedFixCode.class)
   public void setNextStepSignalForNull(){
     StateMachine stateMachine = StateMachine.createNew();
     stateMachine.setNextStepSignal(null);

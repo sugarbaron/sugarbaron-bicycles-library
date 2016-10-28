@@ -384,13 +384,13 @@ implements Log{
 
     StackTraceElement[] invokers = Thread.currentThread().getStackTrace();
     int lastIndex = invokers.length - 1;
-    ensureInsideOfBounds(requiredLevel, lastIndex);
+    requireInsideOfBounds(requiredLevel, lastIndex);
     StackTraceElement invoker = invokers[requiredLevel];
     String invokerName = extractName(invoker);
     return invokerName;
   }
 
-  private void ensureInsideOfBounds(int valueToCheck, int bounds)
+  private void requireInsideOfBounds(int valueToCheck, int bounds)
   throws ExecutionAborted{
     boolean isOutOfBounds = (valueToCheck > bounds);
     if(isOutOfBounds){

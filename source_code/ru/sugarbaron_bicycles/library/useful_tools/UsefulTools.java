@@ -23,6 +23,6 @@ public final class UsefulTools{
     if(isEmpty){
       throw new NeedFixCode("unexpected empty string");
     }
-    return;
+    return;/*123*/
   }
 }
